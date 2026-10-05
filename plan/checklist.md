@@ -82,7 +82,7 @@ status: approved
 
 ## Final Review
 
-- [ ] Project started as the spec describes; relevant checks pass
+- [x] Project started as the spec describes; relevant checks pass
 - [ ] Owner deploys to Arc mainnet with the README commands; addresses go into `docs/config.js` (mainnet contracts, default network = mainnet) and the README table; user completes the journey once on mainnet (target: Oct 11-12, deadline Oct 14, 23:59 ET)
 - [ ] User explored the running app and gave feedback
 - [ ] Agreed fixes implemented, verified, committed (list each as its own unchecked item)
