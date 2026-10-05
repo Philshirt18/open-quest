@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Script, console} from "forge-std/Script.sol";
+import {VmSafe} from "forge-std/Vm.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IQuest} from "../src/IQuest.sol";
 import {QuestRegistry} from "../src/QuestRegistry.sol";
@@ -59,6 +60,13 @@ contract Deploy is Script {
         console.log("QuestBadge:    ", address(registry.badge()));
         console.log("HolderQuest:   ", address(holder));
         console.log("Holder quest id:", holderId);
+
+        // A dry run (no --broadcast) prints the addresses but never writes the file,
+        // so simulated addresses can't be mistaken for real ones.
+        if (!vm.isContext(VmSafe.ForgeContext.ScriptBroadcast)) {
+            console.log("Dry run only: nothing was deployed and no file was written.");
+            return;
+        }
 
         string memory k = "deployment";
         vm.serializeUint(k, "chainId", block.chainid);

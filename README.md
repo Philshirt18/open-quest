@@ -126,13 +126,13 @@ Never put a private key in a file that is committed. Use `.env` (git-ignored) an
 cp .env.example .env              # then paste your key after PRIVATE_KEY= in .env (never in .env.example)
 set -a && source .env && set +a
 
-# 1. Simulate first. Nothing is sent without --broadcast.
+# 1. Simulate first. Nothing is sent and no file is written without --broadcast.
 forge script script/Deploy.s.sol --rpc-url arc_mainnet
 
 # 2. Deploy for real.
 forge script script/Deploy.s.sol --rpc-url arc_mainnet --broadcast
 
-# 3. The addresses are printed and saved to deployments/5042.json.
+# 3. After a real deployment the addresses are printed and saved to deployments/5042.json.
 #    Put them in docs/config.js (networks.mainnet.contracts) and in this README.
 ```
 
