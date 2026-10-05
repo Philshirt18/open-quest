@@ -7,6 +7,14 @@
 **Live demo:** _link goes here once GitHub Pages is on (https://YOUR-USER.github.io/YOUR-REPO/)_
 **Network:** Arc mainnet (chain id 5042). Arc Testnet (chain id 5042002) is used for rehearsal: add `?network=testnet` to the page address.
 
+<p align="center">
+  <img src="assets/screenshot-desktop.png" width="430" alt="Open Quest on Arc mainnet: three finished quests and the Level 3 badge">
+  &nbsp;
+  <img src="assets/screenshot-mobile.png" width="230" alt="The same page on a phone">
+</p>
+
+<p align="center"><sub>Real screenshots from Arc mainnet. The badge is drawn on-chain by the contract: an arc with a node per quest, the level, and the owner's address.</sub></p>
+
 ## What it does
 
 1. **Join:** call `join()` once.
@@ -21,6 +29,9 @@ The page shows each quest as todo or done, and after every transaction it shows 
 ## Community quests: the registry, visible
 
 The page has two sections that make the open registry something you can see and use, not only read about:
+
+<p align="center"><img src="assets/screenshot-community.png" width="430" alt="The Community quests list and the Register a quest form"></p>
+
 
 - **Community quests** lists every quest anyone has registered (newest first) and shows your status on each. Quests written by strangers are shown as plain text, and they never change your badge.
 - **Register a quest** is a form: paste the address of your quest contract, give it a name, and your wallet sends the registration. Before you register, the page asks your contract the one question a quest must answer for your own wallet, and warns you if it does not answer with a clean true or false.
@@ -52,7 +63,8 @@ contract HolderQuest is IQuest {
 }
 
 // 2. Register it. Anyone can, no permission needed.
-registry.registerQuest(address(quest), "Holder quest", "Hold at least 1 USDC.");
+registry.registerQuest(
+    address(quest), "Holder quest", "Hold at least 1 USDC.");
 ```
 
 Or with `cast`, once your quest is deployed:
