@@ -70,7 +70,7 @@ status: approved
   - Try it yourself: do the whole journey on testnet with your own wallet.
   - Commit: `feat: full quest journey on the page`
 
-- [ ] **7. README and mainnet launch kit**
+- [x] **7. README and mainnet launch kit**
   - Becomes usable: a judge can understand the project in two minutes, and you have the exact mainnet commands.
   - Why now: all that's left is documentation and the mainnet step you run yourself.
   - PRD ref: `prd.md > Overview`, `prd.md > Add your own quest`
@@ -83,6 +83,7 @@ status: approved
 ## Final Review
 
 - [ ] Project started as the spec describes; relevant checks pass
+- [ ] Owner deploys to Arc mainnet with the README commands; addresses go into `docs/config.js` (mainnet contracts, default network = mainnet) and the README table; user completes the journey once on mainnet (target: Oct 11-12, deadline Oct 14, 23:59 ET)
 - [ ] User explored the running app and gave feedback
 - [ ] Agreed fixes implemented, verified, committed (list each as its own unchecked item)
 - [ ] User confirmed the first version is ready to ship
@@ -102,3 +103,6 @@ status: approved
 - Slice 6: Arc's RPC prunes old history ("pruned history unavailable"; only roughly the last 5,000 blocks), so a reopened page cannot rebuild old transactions from event logs. The page shows each transaction's dollar fee and explorer link right after it happens and remembers them in this browser (localStorage, per wallet and network). On another device a finished quest shows "Done" and the badge from the chain, without the fee line. Progress itself never depends on the browser.
 - Slice 6: verified on Arc Testnet with throwaway wallets driven through the page's own buttons: join, cancelled prompt, two-step deposit, withdraw, claim, badge image and level, low-funds message with faucet link. The fees the page showed summed to the real balance change exactly ($0.009976).
 - Slice 6: the deposit's low-funds check uses 0.02 USDC as "safe" (0.01 deposit plus fee headroom; real fees for the whole journey were about $0.01).
+- Slice 7: README written and every command in it checked on a fresh clone (31 tests pass; local anvil deploy and the whole journey script pass). Read-only mainnet check: chain id 5042, official USDC is live (6 decimals), gas price 20 gwei, so a full deployment should cost roughly $0.10-0.15 (README says about $0.50 is plenty).
+- Slice 7: a LICENSE file (MIT, "Open Quest contributors") was added so the README's licence line is true; the user can change the copyright holder.
+- Slice 7: explorer verification of WithdrawQuest and HolderQuest on testnet is still pending because of the explorer's rate limit; the README states this and gives a manual fallback.
