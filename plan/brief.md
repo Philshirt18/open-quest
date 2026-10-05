@@ -1,6 +1,6 @@
 ---
 doc: brief
-status: draft
+status: approved
 ---
 
 # Project Brief
