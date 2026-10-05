@@ -657,6 +657,12 @@ function renderHolder() {
     el("a", { href: addrUrl(c.questRegistry), target: "_blank", rel: "noopener noreferrer" }, "QuestRegistry"),
     " · ",
     el("a", { href: addrUrl(c.holderQuest), target: "_blank", rel: "noopener noreferrer" }, "Example Holder quest"));
+  $("safe-links").replaceChildren(
+    el("a", { href: addrUrl(c.questRegistry), target: "_blank", rel: "noopener noreferrer" }, "registry"),
+    ", ",
+    el("a", { href: addrUrl(c.depositQuest), target: "_blank", rel: "noopener noreferrer" }, "deposit contract"),
+    ", ",
+    el("a", { href: addrUrl(c.questBadge), target: "_blank", rel: "noopener noreferrer" }, "badge"));
 }
 
 // The page redraws whole sections after every change. Without this, keyboard focus would fall back

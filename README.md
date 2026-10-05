@@ -16,6 +16,20 @@
 
 <p align="center"><sub>Real screenshots from Arc mainnet. The arc at the top fills as you finish quests and becomes the badge, which the contract draws on-chain: an arc with a node per quest, the level, and the owner's address.</sub></p>
 
+## Seeing a wallet warning?
+
+MetaMask (and other wallets) scan new websites automatically, and a brand-new site on a free `github.io` address can be flagged as "possibly phishing" before it has any history. That is a machine guess, not a finding about this project, and a removal request has been filed. Please don't take our word for it. Everything is open, and the page can only ask your wallet for six things:
+
+| Action | What your wallet is asked to do |
+|---|---|
+| Join | call `join()` |
+| Deposit | allow **exactly 0.01 USDC** (never an unlimited amount), then call `deposit()` |
+| Withdraw | call `withdraw()` |
+| Claim badge | call `claimBadge()` |
+| Register a quest | call `registerQuest(address,string,string)` |
+
+It never asks you to sign a message and never asks for a recovery phrase. Your wallet shows every transaction before you confirm it. You can read the [source](docs/app.js), the [security notes](SECURITY.md) and the contracts on the [explorer](https://explorer.arc.io/address/0x9Ec3c3c0626488B3E3d7F7F8E66642BdE698bC1f), or skip the hosted page and run it yourself: `python3 -m http.server 8000 --directory docs`, then open `http://localhost:8000`.
+
 ## What it does
 
 1. **Join:** call `join()` once.

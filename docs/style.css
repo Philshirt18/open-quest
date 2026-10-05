@@ -90,6 +90,12 @@ code, .mono { font-family: var(--mono); font-size: 0.875rem; }
 .btn.primary:hover:not(:disabled) { background: var(--primary); border-color: var(--primary); }
 @media (prefers-color-scheme: dark) { .btn.primary { color: #0b1020; } }
 
+.safe { margin: 0 0 24px; font-size: 0.9375rem; }
+.safe summary { cursor: pointer; color: var(--primary-strong); font-weight: 500; min-height: 44px; display: flex; align-items: center; }
+.safe[open] { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 0 24px 16px; }
+.safe[open] summary { margin-bottom: 4px; }
+.safe ul { margin: 8px 0 16px; padding-left: 24px; }
+.safe p { margin: 0 0 8px; }
 .banner {
   border: 1px solid var(--warning); border-radius: var(--radius-card);
   padding: 16px 24px; margin-bottom: 24px; background: var(--surface);

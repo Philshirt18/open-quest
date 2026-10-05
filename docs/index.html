@@ -44,6 +44,21 @@
       <span class="pill" id="network-pill"><span class="dot" aria-hidden="true"></span><span id="network-text"></span></span>
     </div>
 
+    <details class="safe" id="safe">
+      <summary>Wallet shows a warning? Is this safe?</summary>
+      <p>Open Quest is brand new and lives on a free GitHub address, so automatic wallet scanners sometimes flag it until it has a history. That is a guess by a machine, not a finding. Here is exactly what this page can ask your wallet to do, and nothing else:</p>
+      <ul>
+        <li><strong>Join:</strong> one call to <code>join()</code>.</li>
+        <li><strong>Deposit:</strong> allow exactly 0.01 USDC (never an unlimited amount), then deposit it. You can take it back at any time.</li>
+        <li><strong>Withdraw, claim the badge, register a quest:</strong> one call each.</li>
+      </ul>
+      <p>It never asks you to sign a message, never asks for your recovery phrase, and your wallet shows every transaction before you confirm it. Don't take our word for it:
+        <a href="https://github.com/Philshirt18/open-quest" target="_blank" rel="noopener noreferrer">read the source code</a>,
+        <a href="https://github.com/Philshirt18/open-quest/blob/main/SECURITY.md" target="_blank" rel="noopener noreferrer">the security notes</a>,
+        or check the contracts on the explorer: <span id="safe-links"></span>.
+        You can also run this page yourself from the repository.</p>
+    </details>
+
     <div class="banner" id="banner" role="alert" hidden>
       <p id="banner-text"></p>
       <button class="btn primary" id="banner-btn" type="button" hidden></button>
