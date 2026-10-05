@@ -195,7 +195,7 @@ async function act(i, work) {
       await loadProgress();
     }
   } catch (e) {
-    console.error(e);
+    if (!isRejected(e)) console.error(e); // a user cancelling is normal, not an error
     const f = friendlyError(e);
     ui.msg = f.text; ui.err = f.err;
   } finally {
