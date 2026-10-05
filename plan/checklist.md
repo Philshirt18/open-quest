@@ -20,7 +20,7 @@ status: approved
   - Try it yourself: run `forge test -vv` and read the test names; each one describes a behavior in plain words.
   - Commit: `feat: project setup and open quest registry`
 
-- [ ] **2. The three quests, the soulbound badge and claiming**
+- [x] **2. The three quests, the soulbound badge and claiming**
   - Becomes usable: in tests, a wallet joins, deposits, withdraws and claims a soulbound badge; every wrong move is rejected.
   - Why now: the second half of the contracts, which is the money-handling part, so the riskiest code gets the most testing early.
   - PRD ref: `prd.md > Quest 1: Join`, `Quest 2: Deposit 0.01 USDC`, `Quest 3: Withdraw`, `Claim badge`
@@ -92,3 +92,4 @@ status: approved
 <!-- One bullet per plan change: what changed, and what the build discovered. -->
 - Slice 1: `forge install` could not add git submodules because the project folder name ends with a space, so dependencies were installed with `--no-git` and only their Solidity sources are committed (see `.gitignore`).
 - Slice 1: the registry constructor takes the three built-in quests with their names and descriptions and registers them as ids 0-2 (the badge is added in slice 2).
+- Slice 2: the reentrancy test passes even without `nonReentrant` because `withdraw()` zeroes the balance before sending funds (checks-effects-interactions). Both layers stay in; the test proves the attack fails, not the guard alone.
