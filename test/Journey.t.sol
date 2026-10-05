@@ -322,3 +322,121 @@ contract ThirdPartyQuestTest is JourneyBase {
         assertTrue(badge.hasBadge(alice));
     }
 }
+
+/// @dev Minimal base64 decoder, only for reading the badge metadata back in tests.
+library B64 {
+    function decode(string memory s) internal pure returns (bytes memory out) {
+        bytes memory d = bytes(s);
+        uint256 len = d.length;
+        while (len > 0 && d[len - 1] == "=") len--;
+        out = new bytes((len * 3) / 4);
+        uint256 acc;
+        uint256 bits;
+        uint256 j;
+        for (uint256 i = 0; i < len; i++) {
+            acc = (acc << 6) | _val(d[i]);
+            bits += 6;
+            if (bits >= 8) {
+                bits -= 8;
+                out[j++] = bytes1(uint8(acc >> bits));
+                acc &= (1 << bits) - 1;
+            }
+        }
+    }
+
+    function _val(bytes1 c) private pure returns (uint256) {
+        if (c >= "A" && c <= "Z") return uint8(c) - 65;
+        if (c >= "a" && c <= "z") return uint8(c) - 71;
+        if (c >= "0" && c <= "9") return uint8(c) + 4;
+        if (c == "+") return 62;
+        if (c == "/") return 63;
+        revert("bad base64");
+    }
+}
+
+contract BadgeArtworkTest is JourneyBase {
+    function _claimed() internal returns (uint256 id) {
+        _completeAll(alice);
+        vm.prank(alice);
+        registry.claimBadge();
+        return badge.tokenIdOf(alice);
+    }
+
+    function _contains(string memory haystack, string memory needle) internal pure returns (bool) {
+        bytes memory h = bytes(haystack);
+        bytes memory n = bytes(needle);
+        if (n.length > h.length) return false;
+        for (uint256 i = 0; i <= h.length - n.length; i++) {
+            bool ok = true;
+            for (uint256 j = 0; j < n.length; j++) {
+                if (h[i + j] != n[j]) { ok = false; break; }
+            }
+            if (ok) return true;
+        }
+        return false;
+    }
+
+    function _count(string memory haystack, string memory needle) internal pure returns (uint256 c) {
+        bytes memory h = bytes(haystack);
+        bytes memory n = bytes(needle);
+        for (uint256 i = 0; i + n.length <= h.length; i++) {
+            bool ok = true;
+            for (uint256 j = 0; j < n.length; j++) {
+                if (h[i + j] != n[j]) { ok = false; break; }
+            }
+            if (ok) { c++; i += n.length - 1; }
+        }
+    }
+
+    function test_metadataDecodesToValidJsonWithImage() public {
+        uint256 id = _claimed();
+        string memory uri = badge.tokenURI(id);
+        string memory prefix = "data:application/json;base64,";
+        assertTrue(_contains(uri, prefix));
+        string memory json = string(B64.decode(_after(uri, bytes(prefix).length)));
+        assertTrue(_contains(json, '"name":"Open Quest Badge - Level 3"'));
+        assertTrue(_contains(json, '{"trait_type":"Level","value":3}'));
+        assertTrue(_contains(json, '"image":"data:image/svg+xml;base64,'));
+    }
+
+    function test_artworkShowsLevelThreeNodesAndOwner() public {
+        uint256 id = _claimed();
+        string memory svg = badge.svgOf(id);
+        assertTrue(_contains(svg, "<svg xmlns='http://www.w3.org/2000/svg'"));
+        assertTrue(_contains(svg, "OPEN QUEST"));
+        assertTrue(_contains(svg, "built on Arc"));
+        assertTrue(_contains(svg, ">3</text>"));            // the level
+        assertEq(_count(svg, "class='on'"), 3);             // all three quest nodes reached
+        assertEq(_count(svg, "class='off'"), 0);
+        // owner's short address: first 6 and last 4 characters, lower case
+        string memory full = vm.toString(alice);            // 0x + 40 hex, lower case
+        assertTrue(_contains(svg, _slice(full, 0, 6)));
+        assertTrue(_contains(svg, _slice(full, 38, 4)));
+        // nothing that could run code or load anything from outside
+        assertFalse(_contains(svg, "<script"));
+        assertFalse(_contains(svg, "href="));
+        assertFalse(_contains(svg, "onload"));
+    }
+
+    function test_artworkFitsComfortablyInOneCall() public {
+        uint256 id = _claimed();
+        uint256 before = gasleft();
+        badge.tokenURI(id);
+        assertLt(before - gasleft(), 1_500_000);            // wallets call this as a read; keep it cheap
+    }
+
+    function _after(string memory s, uint256 from) internal pure returns (string memory) {
+        bytes memory b = bytes(s);
+        bytes memory r = new bytes(b.length - from);
+        for (uint256 i = 0; i < r.length; i++) r[i] = b[from + i];
+        return string(r);
+    }
+
+    function _slice(string memory s, uint256 from, uint256 n) internal pure returns (string memory) {
+        bytes memory b = bytes(s);
+        bytes memory r = new bytes(n);
+        for (uint256 i = 0; i < n; i++) r[i] = b[from + i];
+        return string(r);
+    }
+}
+
