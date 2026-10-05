@@ -66,7 +66,8 @@ contract QuestRegistry is ReentrancyGuard {
     }
 
     /// @notice Read-only: has `user` completed quest `id`?
-    /// @dev A broken or hostile quest (reverts, burns gas, returns junk) counts as "not complete".
+    /// @dev A broken or hostile quest (reverts, burns gas, returns nothing or junk) counts as "not complete"
+    ///      and never makes this call revert. See `_safeCheck`.
     function isComplete(uint256 id, address user) external view returns (bool) {
         if (id >= _quests.length) revert UnknownQuest();
         return _safeCheck(_quests[id].quest, user);
@@ -106,11 +107,17 @@ contract QuestRegistry is ReentrancyGuard {
         emit QuestRegistered(id, quest, registrant, name);
     }
 
-    function _safeCheck(address quest, address user) private view returns (bool) {
-        try IQuest(quest).check{gas: CHECK_GAS_LIMIT}(user) returns (bool done) {
-            return done;
-        } catch {
-            return false;
+    /// @dev Reads a third-party quest without trusting it. Only a call that succeeds and returns
+    ///      exactly `true` (a full 32-byte word equal to 1) counts. Everything else is "not complete":
+    ///      reverts, running out of gas, empty or short return data, values other than 1, and
+    ///      oversized return data (only the first 32 bytes are ever copied, so a "return bomb" is harmless).
+    function _safeCheck(address quest, address user) private view returns (bool ok) {
+        bytes memory data = abi.encodeCall(IQuest.check, (user));
+        uint256 gasLimit = CHECK_GAS_LIMIT;
+        assembly ("memory-safe") {
+            let ptr := mload(0x40)
+            let success := staticcall(gasLimit, quest, add(data, 0x20), mload(data), ptr, 0x20)
+            ok := and(and(success, iszero(lt(returndatasize(), 0x20))), eq(mload(ptr), 1))
         }
     }
 }
