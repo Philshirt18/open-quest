@@ -67,16 +67,16 @@ A working example is in [`src/examples/HolderQuest.sol`](src/examples/HolderQues
 
 ## Deployed contracts
 
-### Arc mainnet (chain id 5042)
+### Arc mainnet (chain id 5042), deployed 2026-10-05
 
 | Contract | Address |
 |---|---|
-| QuestRegistry | _filled in after the mainnet deployment_ |
-| QuestBadge | _filled in after the mainnet deployment_ |
-| RegisterQuest | _filled in after the mainnet deployment_ |
-| DepositQuest | _filled in after the mainnet deployment_ |
-| WithdrawQuest | _filled in after the mainnet deployment_ |
-| HolderQuest (example) | _filled in after the mainnet deployment_ |
+| QuestRegistry | [`0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9`](https://explorer.arc.io/address/0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9) |
+| QuestBadge | [`0x784FC1C9B89249e73657097846584487df91fC59`](https://explorer.arc.io/address/0x784FC1C9B89249e73657097846584487df91fC59) |
+| RegisterQuest | [`0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09`](https://explorer.arc.io/address/0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09) |
+| DepositQuest | [`0x72f924Ab07007cC43C618ba3eFA5c9614C89816b`](https://explorer.arc.io/address/0x72f924Ab07007cC43C618ba3eFA5c9614C89816b) |
+| WithdrawQuest | [`0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1`](https://explorer.arc.io/address/0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1) |
+| HolderQuest (example, id 3) | [`0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077`](https://explorer.arc.io/address/0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077) |
 
 ### Arc Testnet (chain id 5042002), deployed 2026-10-05 for rehearsal
 

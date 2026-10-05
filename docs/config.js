@@ -16,8 +16,17 @@ export const NETWORKS = {
     explorerUrl: "https://explorer.arc.io",
     nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
     faucetUrl: null,
-    // Filled in after the mainnet deployment (done by the project owner).
-    contracts: null,
+    // Deployed on 2026-10-05 by the project owner (deployer 0xC2Ab9130E99410e42701936F6d16E012B9a909d5).
+    contracts: {
+      usdc: "0x3600000000000000000000000000000000000000",
+      registerQuest: "0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09",
+      depositQuest: "0x72f924Ab07007cC43C618ba3eFA5c9614C89816b",
+      withdrawQuest: "0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1",
+      questRegistry: "0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9",
+      questBadge: "0x784FC1C9B89249e73657097846584487df91fC59",
+      holderQuest: "0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077",
+      holderQuestId: 3,
+    },
   },
   testnet: {
     key: "testnet",
@@ -44,7 +53,7 @@ export const NETWORKS = {
 
 // Which network the page uses. Mainnet is the real one; testnet is for rehearsal.
 // The page also accepts ?network=testnet in the address bar.
-export const DEFAULT_NETWORK = "testnet";
+export const DEFAULT_NETWORK = "mainnet";
 
 export const USDC_DECIMALS = 6; // ERC-20 interface
 export const DEPOSIT_AMOUNT = 10000n; // 0.01 USDC in 6-decimal units

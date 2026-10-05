@@ -83,7 +83,7 @@ status: approved
 ## Final Review
 
 - [x] Project started as the spec describes; relevant checks pass
-- [ ] Owner deploys to Arc mainnet with the README commands; addresses go into `docs/config.js` (mainnet contracts, default network = mainnet) and the README table; user completes the journey once on mainnet (target: Oct 11-12, deadline Oct 14, 23:59 ET)
+- [x] Owner deploys to Arc mainnet with the README commands; addresses go into `docs/config.js` (mainnet contracts, default network = mainnet) and the README table; user completes the journey once on mainnet (target: Oct 11-12, deadline Oct 14, 23:59 ET)
 - [ ] User explored the running app and gave feedback
 - [ ] Agreed fixes implemented, verified, committed (list each as its own unchecked item)
 - [ ] User confirmed the first version is ready to ship
@@ -106,3 +106,5 @@ status: approved
 - Slice 7: README written and every command in it checked on a fresh clone (31 tests pass; local anvil deploy and the whole journey script pass). Read-only mainnet check: chain id 5042, official USDC is live (6 decimals), gas price 20 gwei, so a full deployment should cost roughly $0.10-0.15 (README says about $0.50 is plenty).
 - Slice 7: a LICENSE file (MIT, "Open Quest contributors") was added so the README's licence line is true; the user can change the copyright holder.
 - Slice 7: explorer verification of WithdrawQuest and HolderQuest on testnet is still pending because of the explorer's rate limit; the README states this and gives a manual fallback.
+- Mainnet deployment (2026-10-05): deployed by the owner from 0xC2Ab9130E99410e42701936F6d16E012B9a909d5 (block 24390112). Total cost 0.0739 USDC. Read-only checks passed: all six contracts have code, the registry lists 4 quests (3 built-in plus the Holder quest as id 3), badge and registry point at each other, DepositQuest uses the official USDC, WithdrawQuest points at DepositQuest. Addresses are in `deployments/5042.json`, `docs/config.js` (default network is now mainnet) and the README. The owner still needs to complete the journey once on mainnet with their MetaMask wallet.
+- Mainnet deployment: a dry run first caught that `.env` held the old testnet key (a stale shell variable plus a key pasted into `.env.example`); fixed by the owner before broadcasting. The key never entered git.
