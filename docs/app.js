@@ -21,11 +21,11 @@ const S = {
   progress: [false, false, false],
   hasBadge: false,
   badge: null, // { level, image } once claimed
-  holder: null, // true / false once known: status of the example third-party quest
   readProvider: null,
-  // Per card (0 join, 1 deposit, 2 withdraw, 3 claim): what the user is waiting on right now.
-  ui: [0, 1, 2, 3].map(() => ({ busy: false, step: 0, msg: "", err: false, faucet: false })),
-  txs: { 0: [], 1: [], 2: [], 3: [] }, // fee and explorer link per transaction, remembered in this browser
+  // Per card (0 join, 1 deposit, 2 withdraw, 3 claim, 4 register a quest): what the user is waiting on right now.
+  ui: [0, 1, 2, 3, 4].map(() => ({ busy: false, step: 0, msg: "", err: false, faucet: false, okMsg: "" })),
+  txs: { 0: [], 1: [], 2: [], 3: [], 4: [] }, // fee and explorer link per transaction, remembered in this browser
+  community: { items: [], total: 0, shown: 10, status: "idle" }, // quests registered by anyone (ids 3 and up)
 };
 
 const $ = (id) => document.getElementById(id);
@@ -40,6 +40,9 @@ const el = (tag, attrs = {}, ...children) => {
   return node;
 };
 const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+// Names and descriptions of community quests are written by strangers. They are only ever shown as plain
+// text, and invisible control and text-direction characters are removed first.
+const clean = (s) => String(s).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim();
 
 function setStatus(text) {
   $("status-line").textContent = text ?? "";
@@ -49,14 +52,14 @@ function setStatus(text) {
 
 const storeKey = () => `openquest:${net.chainId}:${S.account?.toLowerCase()}`;
 function loadTxs() {
-  S.txs = { 0: [], 1: [], 2: [], 3: [] };
+  S.txs = { 0: [], 1: [], 2: [], 3: [], 4: [] };
   try {
     const saved = JSON.parse(localStorage.getItem(storeKey()) ?? "null");
     // Only keep entries with exactly the expected shape; anything else in storage is ignored.
     const valid = (t) =>
       t && typeof t.label === "string" && t.label.length <= 40 &&
       /^0x[0-9a-fA-F]{64}$/.test(t.hash) && /^[0-9]{1,30}$/.test(String(t.fee));
-    if (saved) for (const k of [0, 1, 2, 3]) S.txs[k] = Array.isArray(saved[k]) ? saved[k].filter(valid) : [];
+    if (saved) for (const k of [0, 1, 2, 3, 4]) S.txs[k] = Array.isArray(saved[k]) ? saved[k].filter(valid) : [];
   } catch { /* storage can be blocked; the page works without it */ }
 }
 function saveTxs() {
@@ -148,14 +151,9 @@ async function loadProgress() {
     const c = net.contracts;
     const registry = new ethers.Contract(c.questRegistry, ABI.registry, S.readProvider);
     const badge = new ethers.Contract(c.questBadge, ABI.badge, S.readProvider);
-    const [progress, hasBadge, holder] = await Promise.all([
-      registry.builtInProgress(S.account),
-      badge.hasBadge(S.account),
-      registry.isComplete(c.holderQuestId, S.account),
-    ]);
+    const [progress, hasBadge] = await Promise.all([registry.builtInProgress(S.account), badge.hasBadge(S.account)]);
     S.progress = Array.from(progress, Boolean);
     S.hasBadge = hasBadge;
-    S.holder = holder;
     S.badge = hasBadge ? await loadBadge(badge) : null;
     S.state = "ready";
   } catch (e) {
@@ -163,6 +161,159 @@ async function loadProgress() {
     S.state = "error";
   }
   render();
+  if (S.state === "ready") {
+    await loadCommunity();
+    previewQuest();
+  }
+}
+
+// ---- community quests: everything registered by anyone, read straight from the registry ------------
+
+function readRegistry() {
+  S.readProvider ??= new ethers.JsonRpcProvider(net.rpcUrl, net.chainId, { staticNetwork: true });
+  return new ethers.Contract(net.contracts.questRegistry, ABI.registry, S.readProvider);
+}
+
+async function loadCommunity() {
+  if (!net.contracts) return;
+  try {
+    const registry = readRegistry();
+    const total = Number(await registry.questCount());
+    const FIRST = 3; // ids 0, 1 and 2 are the built-in quests
+    const ids = [];
+    for (let id = total - 1; id >= FIRST && ids.length < S.community.shown; id--) ids.push(id); // newest first
+    const canSee = S.state === "ready" && S.account;
+    const items = await Promise.all(ids.map(async (id) => {
+      const q = await registry.getQuest(id);
+      const done = canSee ? await registry.isComplete(id, S.account) : null; // safe read: a broken quest is just "not done"
+      return { id, quest: q.quest, registrant: q.registrant, name: clean(q.name), description: clean(q.description), done };
+    }));
+    S.community = { ...S.community, items, total: Math.max(0, total - FIRST), status: "ok" };
+  } catch (e) {
+    console.error(e);
+    S.community.status = "error";
+  }
+  renderCommunity();
+}
+
+function renderCommunity() {
+  const list = $("community");
+  const more = $("community-more");
+  const status = $("community-status");
+  const c = S.community;
+  if (!net.contracts) { list.replaceChildren(); more.hidden = true; status.textContent = ""; return; }
+  if (c.status === "error") {
+    list.replaceChildren();
+    more.hidden = true;
+    status.textContent = "Can't load the community quests right now. Reload the page to try again.";
+    return;
+  }
+  if (c.status === "idle") { status.textContent = "Loading community quests…"; return; }
+  const seeStatus = S.state === "ready";
+  status.textContent =
+    c.total === 0 ? "No community quests yet. Yours could be the first." :
+    seeStatus ? `${c.total} community ${c.total === 1 ? "quest" : "quests"}. They never change your badge.` :
+    `${c.total} community ${c.total === 1 ? "quest" : "quests"}. Connect your wallet to see your status on each.`;
+  list.replaceChildren(...c.items.map((q) => {
+    const chip = q.done === null ? "" : q.done ? "Done" : "Not done";
+    return el("li", { class: "cq" },
+      el("div", { class: "cq-head" },
+        el("h3", {}, q.name || "(no name)"),
+        chip ? el("span", { class: `chip ${q.done ? "yes" : "no"}` }, el("span", { "aria-hidden": "true" }, q.done ? "✓ " : ""), chip) : ""),
+      q.description ? el("p", { class: "muted" }, q.description) : "",
+      el("p", { class: "small muted" },
+        `Quest #${q.id} · by `,
+        el("a", { href: addrUrl(q.registrant), target: "_blank", rel: "noopener noreferrer", class: "mono" }, short(q.registrant)),
+        " · ",
+        el("a", { href: addrUrl(q.quest), target: "_blank", rel: "noopener noreferrer" }, "view contract")));
+  }));
+  more.hidden = c.total <= c.items.length;
+}
+
+// ---- register a quest (a form that sends the same transaction anyone can send) -------------------
+
+const utf8Length = (s) => new TextEncoder().encode(s).length;
+
+function readForm() {
+  return { address: $("reg-address").value.trim(), name: $("reg-name").value.trim(), desc: $("reg-desc").value.trim() };
+}
+
+function validateForm(f) {
+  if (!ethers.isAddress(f.address)) return "Enter the address of your quest contract (0x… with 42 characters).";
+  if (!f.name) return "Give your quest a name.";
+  if (utf8Length(f.name) > 64) return "The name can be at most 64 bytes.";
+  if (utf8Length(f.desc) > 280) return "The description can be at most 280 bytes.";
+  return "";
+}
+
+// Before registering, ask the contract the one question a quest must answer, for the connected wallet.
+async function previewQuest() {
+  const out = $("reg-preview");
+  out.textContent = "";
+  const addr = $("reg-address").value.trim();
+  if (!ethers.isAddress(addr) || S.state !== "ready") return;
+  try {
+    const code = await S.readProvider.getCode(addr);
+    if (code === "0x") { out.textContent = `There is no contract at this address on ${net.name}.`; return; }
+    if (await readRegistry().isRegistered(addr)) { out.textContent = "This contract is already registered."; return; }
+    const iface = new ethers.Interface(["function check(address) view returns (bool)"]);
+    try {
+      const raw = await S.readProvider.call({ to: addr, data: iface.encodeFunctionData("check", [S.account]), gasLimit: 100000 });
+      const word = raw.length === 66 ? BigInt(raw) : null;
+      out.textContent =
+        word === 1n ? "Preview: your quest says this wallet is done." :
+        word === 0n ? "Preview: your quest says this wallet is not done yet." :
+        "Preview: this contract answered, but not with a clean true or false. It would always show as not done.";
+    } catch {
+      out.textContent = "Preview: this contract did not answer check(address). You can still register it, but it would always show as not done.";
+    }
+  } catch { /* the preview is a convenience; the real checks run again when you register */ }
+}
+
+function doRegister() {
+  if (S.state !== "ready") {
+    S.ui[4].msg = S.state === "wrongnetwork" ? `Switch to ${net.name} first.` : "Connect your wallet first.";
+    S.ui[4].err = true;
+    return renderRegister();
+  }
+  return registerQuest();
+}
+
+const registerQuest = () => act(4, async (ui) => {
+  const f = readForm();
+  const problem = validateForm(f);
+  if (problem) { ui.msg = problem; ui.err = true; return false; }
+  if ((await S.readProvider.getCode(f.address)) === "0x") { ui.msg = `There is no contract at that address on ${net.name}.`; ui.err = true; return false; }
+  const { registry } = await signerContracts();
+  if (await registry.isRegistered(f.address)) { ui.msg = "That contract is already registered."; ui.err = true; return false; }
+  await runTx(4, "Register quest", () => registry.registerQuest(f.address, f.name, f.desc));
+  $("reg-address").value = ""; $("reg-name").value = ""; $("reg-desc").value = ""; $("reg-preview").textContent = "";
+  S.community.shown = Math.max(S.community.shown, 10);
+  ui.okMsg = "Registered. It's now in the community list above.";
+  return true;
+});
+
+function renderRegister() {
+  const ui = S.ui[4];
+  const btn = $("reg-submit");
+  const hint = $("reg-hint");
+  btn.setAttribute("aria-disabled", String(ui.busy || S.state !== "ready"));
+  btn.textContent = ui.busy ? "Working…" : "Register quest";
+  hint.textContent = S.state === "ready" ? "" : S.state === "wrongnetwork" ? `Switch to ${net.name} to register.` : "Connect your wallet to register a quest.";
+  const fb = $("reg-feedback");
+  const nodes = [];
+  if (ui.msg) nodes.push(el("p", { class: `feedback${ui.err ? " error" : ""}`, role: ui.err ? "alert" : "status" }, ui.msg));
+  nodes.push(...feeLines(4));
+  fb.replaceChildren(...nodes);
+}
+
+function renderFees() {
+  const all = Object.values(S.txs).flat();
+  const box = $("fees-summary");
+  if (!all.length || S.state !== "ready") { box.hidden = true; return; }
+  const total = all.reduce((sum, t) => sum + BigInt(t.fee), 0n);
+  box.textContent = `Network fees paid so far in this browser: ${feeUsd(total)} across ${all.length} ${all.length === 1 ? "transaction" : "transactions"}. Fees on Arc are paid in USDC, so this is the whole cost. Your 0.01 USDC deposit comes back to you.`;
+  box.hidden = false;
 }
 
 // Reads the badge's on-chain metadata (a data: URI), so nothing is hosted anywhere.
@@ -201,12 +352,13 @@ async function onRightNetwork() {
 async function act(i, work) {
   const ui = S.ui[i];
   if (ui.busy) return; // buttons stay focusable while working, so ignore a second press
-  ui.busy = true; ui.msg = ""; ui.err = false; ui.faucet = false; ui.step = 0;
+  ui.busy = true; ui.msg = ""; ui.okMsg = ""; ui.err = false; ui.faucet = false; ui.step = 0;
   render();
   try {
     if (!(await onRightNetwork())) return;
     if (await work(ui)) {
-      ui.msg = "";
+      ui.msg = ui.okMsg || "";
+      ui.okMsg = "";
       await loadProgress();
     }
   } catch (e) {
@@ -451,17 +603,12 @@ function renderBadge() {
 // The live example for builders: does this wallet pass the example third-party quest?
 function renderHolder() {
   const c = net.contracts;
-  const status = $("holder-status");
   const links = $("builder-links");
-  if (!c) { status.textContent = ""; links.replaceChildren(); return; }
+  if (!c) { links.replaceChildren(); return; }
   links.replaceChildren(
     el("a", { href: addrUrl(c.questRegistry), target: "_blank", rel: "noopener noreferrer" }, "QuestRegistry"),
     " · ",
     el("a", { href: addrUrl(c.holderQuest), target: "_blank", rel: "noopener noreferrer" }, "Example Holder quest"));
-  status.textContent =
-    S.state !== "ready" ? "Connect your wallet to see your status on the example quest."
-      : S.holder ? "Example quest status for your wallet: done. You hold at least 1 USDC."
-        : "Example quest status for your wallet: not done yet. Hold at least 1 USDC to complete it.";
 }
 
 // The page redraws whole sections after every change. Without this, keyboard focus would fall back
@@ -473,6 +620,9 @@ function render() {
   renderQuests();
   renderBadge();
   renderHolder();
+  renderRegister();
+  renderFees();
+  renderCommunity();
   if (!key) return;
   const same = document.querySelector(`[data-focus-key="${key}"]`);
   const next = document.querySelector('.quest.active [data-focus-key], [data-focus-key="badge"]');
@@ -495,6 +645,11 @@ function listenToWallet() {
 
 function start() {
   $("connect-btn").addEventListener("click", connect);
+  $("register-form").addEventListener("submit", (e) => { e.preventDefault(); doRegister(); });
+  let typing;
+  $("reg-address").addEventListener("input", () => { clearTimeout(typing); typing = setTimeout(previewQuest, 400); });
+  $("community-more").addEventListener("click", async () => { S.community.shown += 10; await loadCommunity(); });
+  if (net.contracts) loadCommunity(); // anyone can browse the community quests, even without a wallet
   if (window.ethereum) {
     listenToWallet();
     // Reconnect quietly if this site was already allowed (no wallet pop-up).

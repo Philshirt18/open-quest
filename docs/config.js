@@ -66,6 +66,7 @@ export const ABI = {
     "function builtInProgress(address user) view returns (bool[3])",
     "function isComplete(uint256 id, address user) view returns (bool)",
     "function questCount() view returns (uint256)",
+    "function isRegistered(address quest) view returns (bool)",
     "function getQuest(uint256 id) view returns (tuple(address quest, address registrant, string name, string description))",
     "function claimBadge()",
     "function registerQuest(address quest, string name, string description) returns (uint256)",

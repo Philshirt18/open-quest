@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B1020"/><stop offset="1" stop-color="#1B2E5C"/></linearGradient>
+    <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4D8EE9"/><stop offset="1" stop-color="#5FBFFF"/></linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.5" r="0.5"><stop offset="0" stop-color="#5FBFFF" stop-opacity="0.30"/><stop offset="1" stop-color="#5FBFFF" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <text x="80" y="210" font-family="Helvetica,Arial,sans-serif" font-size="104" font-weight="300" fill="#FFFFFF" letter-spacing="-2">Open Quest</text>
+  <text x="84" y="282" font-family="Helvetica,Arial,sans-serif" font-size="38" fill="#9CC3F5">An open quest registry on Arc</text>
+  <g font-family="Helvetica,Arial,sans-serif" font-size="30" fill="#E6EAF2">
+    <text x="84" y="388">1  Join  ·  2  Deposit 0.01 USDC  ·  3  Withdraw</text>
+    <text x="84" y="440" fill="#9CC3F5">Earn a badge. Add your own quest.</text>
+  </g>
+  <text x="84" y="546" font-family="Helvetica,Arial,sans-serif" font-size="28" fill="#5FBFFF">built on Arc  ·  the whole journey costs about a cent</text>
+  <g transform="translate(0,0)">
+    <path d="M700 470 A210 210 0 0 1 1120 470" fill="none" stroke="url(#arc)" stroke-width="14" stroke-linecap="round"/>
+    <g fill="#FFFFFF" stroke="#5FBFFF" stroke-width="9">
+      <circle cx="700" cy="470" r="34"/><circle cx="910" cy="260" r="34"/><circle cx="1120" cy="470" r="34"/>
+    </g>
+    <g fill="none" stroke="#2F6FCF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M684 470 l11 11 l20 -22"/><path d="M894 260 l11 11 l20 -22"/><path d="M1104 470 l11 11 l20 -22"/>
+    </g>
+  </g>
+</svg>

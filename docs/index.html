@@ -4,7 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Open Quest: an open quest registry on Arc</title>
-  <meta name="description" content="Complete three quests on Arc and earn a soulbound badge. Anyone can add their own quest.">
+  <meta name="description" content="An open quest registry on Arc. Finish three quests, earn a soulbound badge, or add a quest of your own.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Open Quest: an open quest registry on Arc">
+  <meta property="og:description" content="Finish three quests, earn a soulbound badge, or add a quest of your own. Everything is verified on-chain, and the whole journey costs about a cent in USDC.">
+  <meta property="og:image" content="https://philshirt18.github.io/open-quest/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Open Quest: an arc with three checked nodes and the words Open Quest, an open quest registry on Arc">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Open Quest: an open quest registry on Arc">
+  <meta name="twitter:description" content="Finish three quests, earn a soulbound badge, or add a quest of your own.">
+  <meta name="twitter:image" content="https://philshirt18.github.io/open-quest/og.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://rpc.mainnet.arc.io https://rpc.testnet.arc.io; base-uri 'none'; form-action 'none'">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,12 +53,21 @@
 
     <h2 id="quests-title">Your quests</h2>
     <ol class="quests" id="quests" aria-labelledby="quests-title"></ol>
+    <p class="note small" id="fees-summary" hidden></p>
 
     <div id="badge-area"></div>
 
+    <section aria-labelledby="community-title">
+      <h2 id="community-title">Community quests</h2>
+      <p>Anyone can add a quest to the registry. These are quests written by other people. They are shown here for you to try, and they <strong>never change your badge</strong>.</p>
+      <p class="status-line" id="community-status" role="status"></p>
+      <ul class="community" id="community"></ul>
+      <button class="btn" id="community-more" type="button" hidden>Show more</button>
+    </section>
+
     <section aria-labelledby="own-title">
       <h2 id="own-title">Add your own quest</h2>
-      <p>Open Quest is open. A quest is any contract that can answer one question: "has this wallet done it?" Write one, register it, and every app that reads the registry can show it. No permission needed.</p>
+      <p>A quest is any contract that can answer one question: "has this wallet done it?" Write one, register it, and every app that reads the registry can show it. No permission needed. <a href="https://github.com/Philshirt18/open-quest/blob/main/BUILDERS.md" target="_blank" rel="noopener noreferrer">Read the builder guide</a>.</p>
 <pre tabindex="0" role="region" aria-label="Example quest code, scrollable"><code>// 1. Write a quest: one function that says "has this wallet done it?"
 contract HolderQuest is IQuest {
     IERC20Balance public immutable token;
@@ -60,8 +81,30 @@ contract HolderQuest is IQuest {
 
 // 2. Register it. Anyone can.
 registry.registerQuest(address(quest), "Holder quest", "Hold at least 1 USDC.");</code></pre>
-      <p class="status-line" id="holder-status" role="status"></p>
-      <p class="small muted">Third-party quests are shown in the registry for anyone to read. They never change the badge, so a quest you don't trust can't affect it. <span id="builder-links"></span></p>
+
+      <h3 id="register-title">Register a quest</h3>
+      <p class="small muted">Already deployed your quest? Register it here. This sends one transaction from your wallet (about a third of a cent). It is public and permanent, so check your contract first.</p>
+      <form id="register-form" class="form" novalidate aria-labelledby="register-title">
+        <div class="field">
+          <label for="reg-address">Quest contract address</label>
+          <input id="reg-address" name="address" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="0x…" aria-describedby="reg-preview">
+        </div>
+        <div class="field">
+          <label for="reg-name">Name <span class="muted">(up to 64 bytes)</span></label>
+          <input id="reg-name" name="name" type="text" maxlength="64" autocomplete="off" placeholder="Hold 1 USDC">
+        </div>
+        <div class="field">
+          <label for="reg-desc">Description <span class="muted">(optional, up to 280 bytes)</span></label>
+          <textarea id="reg-desc" name="description" rows="3" maxlength="280" placeholder="What does someone have to do?"></textarea>
+        </div>
+        <p class="small" id="reg-preview" role="status" aria-live="polite"></p>
+        <div class="actions">
+          <button class="btn primary" id="reg-submit" type="submit">Register quest</button>
+          <span class="small muted" id="reg-hint"></span>
+        </div>
+        <div id="reg-feedback" aria-live="polite"></div>
+      </form>
+      <p class="small muted"><span id="builder-links"></span></p>
     </section>
   </main>
 
