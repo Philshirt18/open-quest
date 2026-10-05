@@ -12,3 +12,7 @@ lib/openzeppelin-contracts/*
 !lib/openzeppelin-contracts/LICENSE
 lib/forge-std/test/
 lib/forge-std/.github/
+
+# Local-chain deployments are throwaway; testnet and mainnet files are committed
+deployments/31337.json
+broadcast/*/31337/

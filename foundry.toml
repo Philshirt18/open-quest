@@ -6,6 +6,7 @@ solc_version = "0.8.28"
 evm_version = "cancun"   # Arc targets Osaka (a superset); see docs.arc.io/arc/references/evm-differences
 optimizer = true
 optimizer_runs = 200
+fs_permissions = [{ access = "read-write", path = "./deployments" }]
 remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"]
 
 # Network URLs come from the environment (.env), never hardcoded here.

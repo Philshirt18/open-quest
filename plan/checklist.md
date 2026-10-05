@@ -30,7 +30,7 @@ status: approved
   - Try it yourself: run `forge test -vv`; I walk you through the list and explain what each test proves.
   - Commit: `feat: built-in quests, soulbound badge and claiming`
 
-- [ ] **3. Deploy script and local deployment**
+- [x] **3. Deploy script and local deployment**
   - Becomes usable: one command deploys everything to a local chain (anvil), and you can play through the whole journey with `cast` commands.
   - Why now: proves the deploy path with no real funds before the unfamiliar parts.
   - PRD ref: `prd.md > Core Journey`
