@@ -60,7 +60,7 @@ status: approved
   - Try it yourself: open `http://localhost:8000` with your wallet and see your quests.
   - Commit: `feat: page with wallet connection and quest progress`
 
-- [ ] **6. The page: quests, fees, badge and "Add your own quest"**
+- [x] **6. The page: quests, fees, badge and "Add your own quest"**
   - Becomes usable: you complete the whole journey on the page, see fees in dollars and explorer links, claim and see your badge, and read the add-a-quest section with the live Holder quest.
   - Why now: the full journey, built on top of working reads.
   - PRD ref: `prd.md > Quest 1`, `Quest 2`, `Quest 3`, `Transaction feedback`, `Claim badge`, `Add your own quest`
@@ -99,3 +99,6 @@ status: approved
 - Slice 5: ethers pinned to 6.17.0 from cdnjs with a SHA-384 integrity hash computed from the downloaded file. Added a Content-Security-Policy meta tag (scripts only from the page itself and cdnjs; network requests only to Arc's public RPCs). If a later slice needs another host (for example a different RPC), update the policy in `docs/index.html`.
 - Slice 5: design colours darkened for WCAG AA after measuring contrast (muted text #5A6A80, success #15803D); recorded in `plan/design.md`. Buttons use #2F6FCF, the brand blue #4D8EE9 stays for borders and hover.
 - Slice 5: the page attaches wallet listeners the first time it sees a wallet (some wallets inject late). All states were checked with an injected test wallet: no wallet, wrong network then switch, fresh wallet, finished wallet (real testnet data), mainnet not configured, unreachable network with retry.
+- Slice 6: Arc's RPC prunes old history ("pruned history unavailable"; only roughly the last 5,000 blocks), so a reopened page cannot rebuild old transactions from event logs. The page shows each transaction's dollar fee and explorer link right after it happens and remembers them in this browser (localStorage, per wallet and network). On another device a finished quest shows "Done" and the badge from the chain, without the fee line. Progress itself never depends on the browser.
+- Slice 6: verified on Arc Testnet with throwaway wallets driven through the page's own buttons: join, cancelled prompt, two-step deposit, withdraw, claim, badge image and level, low-funds message with faucet link. The fees the page showed summed to the real balance change exactly ($0.009976).
+- Slice 6: the deposit's low-funds check uses 0.02 USDC as "safe" (0.01 deposit plus fee headroom; real fees for the whole journey were about $0.01).

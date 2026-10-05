@@ -43,6 +43,26 @@
     <ol class="quests" id="quests" aria-labelledby="quests-title"></ol>
 
     <div id="badge-area"></div>
+
+    <section aria-labelledby="own-title">
+      <h2 id="own-title">Add your own quest</h2>
+      <p>Open Quest is open. A quest is any contract that can answer one question: "has this wallet done it?" Write one, register it, and every app that reads the registry can show it. No permission needed.</p>
+<pre><code>// 1. Write a quest: one function that says "has this wallet done it?"
+contract HolderQuest is IQuest {
+    IERC20Balance public immutable token;
+    uint256 public immutable minBalance;
+    constructor(IERC20Balance t, uint256 m) { token = t; minBalance = m; }
+
+    function check(address user) external view returns (bool) {
+        return token.balanceOf(user) &gt;= minBalance;
+    }
+}
+
+// 2. Register it. Anyone can.
+registry.registerQuest(address(quest), "Holder quest", "Hold at least 1 USDC.");</code></pre>
+      <p class="status-line" id="holder-status" role="status"></p>
+      <p class="small muted">Third-party quests are shown in the registry for anyone to read. They never change the badge, so a quest you don't trust can't affect it. <span id="builder-links"></span></p>
+    </section>
   </main>
 
   <footer>
