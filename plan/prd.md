@@ -81,6 +81,10 @@ A section below the three quests lists every quest registered by anyone (newest 
 A form (contract address, name up to 64 bytes, optional description up to 280 bytes) that sends `registerQuest` from the visitor's wallet. It shows a preview of what the quest answers for the connected wallet and refuses obvious mistakes (not an address, no contract there, already registered) before asking the wallet for anything.
 - **Criteria:** a valid registration shows the fee in dollars and an explorer link and the quest appears in the community list.
 
+### Progress arc and the path (added in the final polish)
+The top of the page shows the same arc as the badge: three nodes (one per quest) that fill in as quests are completed, a large counter ("2/3 quests done"), and a one-line status ("Next up: Withdraw."). When the badge is earned the arc glows and the counter shows the level. Below it, the three quests and the badge are stops along a connected path instead of identical boxes; the next step is highlighted and finished steps are ticked. Icons are small line icons in the same style as the arc (no emoji).
+- **Criteria:** the arc and counter always match the on-chain progress; the screen reader label states the progress in words.
+
 ### Badge artwork (changed after the first review)
 The badge is an on-chain SVG: an arc with one ticked node per quest, the level, "built on Arc" and the owner's short address.
 

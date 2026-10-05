@@ -102,37 +102,60 @@ code, .mono { font-family: var(--mono); font-size: 0.875rem; }
 .status-line:empty { display: none; }
 .status-line { margin: 0 0 16px; color: var(--muted); font-size: 0.875rem; }
 
-.quests { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
-.quest {
-  display: grid; grid-template-columns: 48px 1fr; gap: 16px;
-  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-card);
-  padding: 24px;
-}
+/* ---- the hero arc: the same arc as the badge, filling as quests are completed ---- */
+.hero { text-align: center; margin: 8px auto 40px; max-width: 460px; }
+.arc-wrap { position: relative; }
+.arc-wrap svg { display: block; width: 100%; height: auto; overflow: visible; }
+.arc-track { fill: none; stroke: var(--border); stroke-width: 10; stroke-linecap: round; }
+.arc-fill { fill: none; stroke: url(#heroGrad); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 700ms ease; }
+.hero.earned .arc-fill { filter: drop-shadow(0 0 7px rgba(95, 191, 255, 0.6)); }
+.stop .node { fill: var(--bg); stroke: var(--border); stroke-width: 6; transition: fill 300ms ease, stroke 300ms ease; }
+.stop.next .node { stroke: var(--primary); }
+.stop.on .node { fill: var(--primary-strong); stroke: var(--accent); }
+.stop .tick { fill: none; stroke: #fff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity 300ms ease; }
+.stop.on .tick { opacity: 1; }
+@media (prefers-color-scheme: dark) { .stop.on .tick { stroke: #0b1020; } .stop.on .node { stroke: var(--accent); } }
+.arc-center { position: absolute; left: 0; right: 0; top: 32%; }
+.arc-count { margin: 0; font-size: 4.5rem; font-weight: 300; line-height: 1; letter-spacing: -0.03em; }
+.arc-count span { font-size: 2rem; color: var(--muted); letter-spacing: 0; margin-left: 4px; }
+.arc-label { margin: 8px 0 0; font-size: 0.8125rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+.arc-note { margin: 0; font-size: 1.125rem; }
+
+/* ---- the path: quests are stops along a line, not identical boxes ---- */
+.quests { list-style: none; margin: 0; padding: 0; }
+.quest { position: relative; display: grid; grid-template-columns: 48px 1fr; gap: 24px; padding: 8px 0 32px; }
+.quest::before { content: ""; position: absolute; left: 23px; top: 56px; bottom: -8px; width: 2px; background: var(--border); }
+.quest.done::before { background: var(--primary); }
+.quests .quest:last-child::before { bottom: -40px; }
+#badge-area .quest::before { display: none; }
 .quest .num {
+  position: relative; z-index: 1;
   width: 48px; height: 48px; border-radius: 50%;
   display: grid; place-items: center;
   font-size: 1.25rem; font-weight: 500;
-  background: var(--surface); color: var(--muted); border: 1px solid var(--border);
+  background: var(--bg); color: var(--muted); border: 2px dashed var(--border);
 }
-.quest .state { font-size: 0.875rem; margin-top: 8px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.quest.active { border: 2px solid var(--primary); padding: 23px; }
-.quest.active .num { background: var(--primary-strong); color: #fff; border-color: var(--primary-strong); }
-@media (prefers-color-scheme: dark) { .quest.active .num { color: #0b1020; } }
-.quest.locked { background: var(--surface); }
-.quest.locked h3, .quest.locked p { color: var(--muted); }
-.quest.done .num { background: var(--success); border-color: var(--success); color: #fff; }
+.quest.active .num { border: 2px solid var(--primary); color: var(--primary-strong); box-shadow: 0 0 0 6px rgba(95, 191, 255, 0.22); }
+.quest.done .num { background: var(--primary-strong); border: 2px solid var(--primary-strong); color: #fff; }
 @media (prefers-color-scheme: dark) { .quest.done .num { color: #0b1020; } }
+.quest .body { min-width: 0; }
+.quest.active .body { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px 24px; margin-top: -8px; }
+.quest.locked .body h3, .quest.locked .body p { color: var(--muted); }
+.quest .state { font-size: 0.875rem; margin-top: 8px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .quest.done .state { color: var(--success); font-weight: 500; }
+.quest.active .state { color: var(--primary-strong); font-weight: 500; }
 .quest .actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
 .quest .actions:empty { display: none; }
 .quest .feedback { margin-top: 8px; font-size: 0.875rem; color: var(--muted); }
 .quest .feedback.error { color: var(--error); }
 .quest .steps { display: flex; gap: 16px; font-size: 0.875rem; color: var(--muted); margin: 8px 0 0; padding: 0; list-style: none; }
 .quest .steps li.current { color: var(--text); font-weight: 500; }
+.ic { flex: none; vertical-align: -0.15em; }
 
 .check { animation: pop 150ms ease-out; }
 @keyframes pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+.badge-card { position: relative; z-index: 1; }
 .badge-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .badge-card {
   margin-top: 24px; text-align: center;
@@ -148,21 +171,6 @@ pre {
 }
 
 footer { padding-top: 48px; padding-bottom: 48px; color: var(--muted); font-size: 0.875rem; }
-
-@media (min-width: 640px) {
-  header { padding-top: 64px; }
-  h1 { font-size: 3rem; }
-}
-@media (max-width: 480px) {
-  .quest { grid-template-columns: 1fr; padding: 16px; }
-  .quest.active { padding: 15px; }
-  .quest .num { width: 40px; height: 40px; }
-  .btn { width: 100%; }
-  .toolbar .btn { width: auto; }
-}
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
-}
 
 /* ---- community quests and the register form ---- */
 .community { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 16px; }
@@ -192,7 +200,22 @@ textarea { resize: vertical; }
 .btn[aria-disabled="true"] { opacity: 0.55; }
 
 .badge-card img { width: 240px; height: 240px; max-width: 100%; border-radius: 40px; }
+@media (min-width: 640px) {
+  header { padding-top: 64px; }
+  h1 { font-size: 3rem; }
+}
 @media (max-width: 480px) {
+  .quest { grid-template-columns: 40px 1fr; gap: 16px; }
+  .quest::before { left: 19px; top: 48px; }
+  .quest .num { width: 40px; height: 40px; font-size: 1.0625rem; }
+  .quest.active .body { padding: 16px; }
+  .arc-count { font-size: 3.5rem; }
+  .arc-center { top: 30%; }
+  .btn { width: 100%; }
+  .toolbar .btn { width: auto; }
   .cq { padding: 16px; }
   .form .actions .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }

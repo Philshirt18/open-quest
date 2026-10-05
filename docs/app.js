@@ -39,6 +39,20 @@ const el = (tag, attrs = {}, ...children) => {
   for (const c of children) node.append(c);
   return node;
 };
+// Small line icons in the same style as the arc (replace emoji and stock glyphs).
+const SVGNS = "http://www.w3.org/2000/svg";
+const ICONS = {
+  lock: ["M6 11h12v9H6z", "M8.5 11V8a3.5 3.5 0 0 1 7 0v3"],
+  check: ["M5 12.5l4.5 4.5L19 7.5"],
+  arc: ["M3.5 18a8.5 8.5 0 0 1 17 0", "M3.5 18h.01M12 9.5h.01M20.5 18h.01"],
+};
+function icon(name, size = 16) {
+  const svg = document.createElementNS(SVGNS, "svg");
+  for (const [k, v] of Object.entries({ viewBox: "0 0 24 24", width: size, height: size, "aria-hidden": "true", fill: "none",
+    stroke: "currentColor", "stroke-width": name === "arc" ? "2.6" : "2.2", "stroke-linecap": "round", "stroke-linejoin": "round", class: "ic" })) svg.setAttribute(k, v);
+  for (const d of ICONS[name]) { const p = document.createElementNS(SVGNS, "path"); p.setAttribute("d", d); svg.append(p); }
+  return svg;
+}
 const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 // Names and descriptions of community quests are written by strangers. They are only ever shown as plain
 // text, and invisible control and text-direction characters are removed first.
@@ -219,7 +233,7 @@ function renderCommunity() {
     return el("li", { class: "cq" },
       el("div", { class: "cq-head" },
         el("h3", {}, q.name || "(no name)"),
-        chip ? el("span", { class: `chip ${q.done ? "yes" : "no"}` }, el("span", { "aria-hidden": "true" }, q.done ? "✓ " : ""), chip) : ""),
+        chip ? el("span", { class: `chip ${q.done ? "yes" : "no"}` }, q.done ? icon("check", 14) : "", chip) : ""),
       q.description ? el("p", { class: "muted" }, q.description) : "",
       el("p", { class: "small muted" },
         `Quest #${q.id} · by `,
@@ -305,6 +319,39 @@ function renderRegister() {
   if (ui.msg) nodes.push(el("p", { class: `feedback${ui.err ? " error" : ""}`, role: ui.err ? "alert" : "status" }, ui.msg));
   nodes.push(...feeLines(4));
   fb.replaceChildren(...nodes);
+}
+
+// The arc at the top: the same arc as the badge, filling up as quests are completed.
+function renderHero() {
+  const ready = S.state === "ready";
+  const done = ready ? S.progress.filter(Boolean).length : 0;
+  const next = ready ? S.progress.findIndex((d) => !d) : -1;
+  const earned = ready && S.hasBadge;
+  const LENGTH = 471.24; // length of the arc path
+  const frac = done >= 3 ? 1 : done === 2 ? 0.5 : 0; // the arc reaches the last finished stop
+  $("arc-fill").setAttribute("stroke-dashoffset", String(LENGTH * (1 - frac)));
+  document.querySelectorAll("#arc .stop").forEach((g, i) => {
+    const on = ready && S.progress[i];
+    g.classList.toggle("on", Boolean(on));
+    g.classList.toggle("next", ready && i === next);
+  });
+  $("hero").classList.toggle("earned", earned);
+  const count = earned ? `${S.badge?.level ?? 3}` : String(done);
+  $("arc-count").replaceChildren(count, earned ? "" : el("span", {}, "/3"));
+  $("arc-label").textContent = earned ? "level" : "quests done";
+  let note;
+  if (earned) note = "Badge earned. It's yours for good.";
+  else if (ready && done === 3) note = "All three done. Claim your badge below.";
+  else if (ready) note = `Next up: ${QUESTS[next].title}.`;
+  else note = {
+    nowallet: "You need a wallet to start.",
+    wrongnetwork: `Switch to ${net.name} to see your progress.`,
+    loading: "Reading the chain…",
+    error: "Can't reach Arc right now.",
+    noconfig: "Not set up on this network yet.",
+  }[S.state] ?? "Connect your wallet to begin.";
+  $("arc-note").textContent = note;
+  $("arc").setAttribute("aria-label", earned ? `Level ${S.badge?.level ?? 3} badge earned` : `Progress: ${done} of 3 quests done`);
 }
 
 function renderFees() {
@@ -554,19 +601,20 @@ function renderQuests() {
       const ui = S.ui[i];
       const stateLine =
         st === "done"
-          ? el("p", { class: "state" }, el("span", { class: "check", "aria-hidden": "true" }, "✓"), "Done")
+          ? el("p", { class: "state" }, el("span", { class: "check" }, icon("check")), "Done")
           : st === "active"
-            ? el("p", { class: "state" }, "Your next step")
-            : el("p", { class: "state" }, el("span", { "aria-hidden": "true" }, "🔒"), lockedReason(i));
+            ? el("p", { class: "state" }, "Next up")
+            : el("p", { class: "state" }, icon("lock"), lockedReason(i));
       const actions = el("div", { class: "actions", id: `actions-${i}` });
       if (st === "active") {
         actions.append(el("button", { class: "btn primary", type: "button", "data-focus-key": `action-${i}`, onclick: ACTIONS[i].run, ...(ui.busy ? { "aria-disabled": "true" } : {}) },
           ui.busy ? "Working…" : ACTIONS[i].label));
       }
-      const body = el("div", {}, el("h3", {}, q.title), el("p", { class: "muted" }, q.text), stateLine, actions);
+      const body = el("div", { class: "body" }, el("h3", {}, q.title), el("p", { class: "muted" }, q.text), stateLine, actions);
       if (i === 1 && st === "active") body.append(depositSteps());
       body.append(...feedback(i), ...(st === "done" || st === "active" ? feeLines(i) : []));
-      return el("li", { class: `quest ${st}`, "data-quest": String(i) }, el("div", { class: "num", "aria-hidden": "true" }, String(i + 1)), body);
+      return el("li", { class: `quest ${st}`, "data-quest": String(i) },
+        el("div", { class: "num", "aria-hidden": "true" }, st === "done" ? icon("check", 22) : String(i + 1)), body);
     }),
   );
 }
@@ -593,10 +641,10 @@ function renderBadge() {
   const reason = allDone ? "All three quests are done." : S.state === "ready" ? "Complete all 3 quests" : "Connect your wallet first";
   area.replaceChildren(
     el("section", { class: `quest ${allDone ? "active" : "locked"}`, "aria-label": "Claim your badge" },
-      el("div", { class: "num", "aria-hidden": "true" }, "★"),
-      el("div", {}, el("h3", {}, "Your badge"),
+      el("div", { class: "num", "aria-hidden": "true" }, icon("arc", 24)),
+      el("div", { class: "body" }, el("h3", {}, "Your badge"),
         el("p", { class: "muted" }, "A soulbound badge: it stays in your wallet and can't be transferred."),
-        el("p", { class: "state" }, el("span", { "aria-hidden": "true" }, allDone ? "" : "🔒"), reason),
+        el("p", { class: "state" }, allDone ? "" : icon("lock"), reason),
         actions, ...feedback(3), ...feeLines(3))));
 }
 
@@ -617,6 +665,7 @@ function render() {
   const key = document.activeElement?.dataset?.focusKey ?? null;
   renderToolbar();
   renderBanner();
+  renderHero();
   renderQuests();
   renderBadge();
   renderHolder();

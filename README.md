@@ -13,7 +13,7 @@
   <img src="assets/screenshot-mobile.png" width="230" alt="The same page on a phone">
 </p>
 
-<p align="center"><sub>Real screenshots from Arc mainnet. The badge is drawn on-chain by the contract: an arc with a node per quest, the level, and the owner's address.</sub></p>
+<p align="center"><sub>Real screenshots from Arc mainnet. The arc at the top fills as you finish quests and becomes the badge, which the contract draws on-chain: an arc with a node per quest, the level, and the owner's address.</sub></p>
 
 ## What it does
 

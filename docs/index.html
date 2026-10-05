@@ -51,7 +51,29 @@
 
     <p class="status-line" id="status-line" role="status" aria-live="polite"></p>
 
-    <h2 id="quests-title">Your quests</h2>
+    <section class="hero" id="hero" aria-label="Your progress">
+      <div class="arc-wrap">
+        <svg id="arc" viewBox="0 0 400 240" role="img" aria-label="Progress: 0 of 3 quests done">
+          <defs>
+            <linearGradient id="heroGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4D8EE9"/><stop offset="1" stop-color="#5FBFFF"/>
+            </linearGradient>
+          </defs>
+          <path class="arc-track" d="M50 200 A150 150 0 0 1 350 200"/>
+          <path class="arc-fill" id="arc-fill" d="M50 200 A150 150 0 0 1 350 200" stroke-dasharray="471.24" stroke-dashoffset="471.24"/>
+          <g class="stop" data-stop="0"><circle class="node" cx="50" cy="200" r="20"/><path class="tick" d="M42 200 l6 6 l11 -12"/></g>
+          <g class="stop" data-stop="1"><circle class="node" cx="200" cy="50" r="20"/><path class="tick" d="M192 50 l6 6 l11 -12"/></g>
+          <g class="stop" data-stop="2"><circle class="node" cx="350" cy="200" r="20"/><path class="tick" d="M342 200 l6 6 l11 -12"/></g>
+        </svg>
+        <div class="arc-center" aria-hidden="true">
+          <p class="arc-count" id="arc-count">0<span>/3</span></p>
+          <p class="arc-label" id="arc-label">quests done</p>
+        </div>
+      </div>
+      <p class="arc-note" id="arc-note" role="status">Connect your wallet to begin.</p>
+    </section>
+
+    <h2 id="quests-title">The path</h2>
     <ol class="quests" id="quests" aria-labelledby="quests-title"></ol>
     <p class="note small" id="fees-summary" hidden></p>
 

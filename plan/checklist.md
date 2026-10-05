@@ -136,6 +136,8 @@ Pre-ship review (security, accessibility, performance), 2026-10-05. Checked with
 - New on-chain badge artwork (needs a new badge contract, so one more registry and badge redeploy at the end).
 - `SECURITY.md` and a Slither run (no high or medium findings; 3 notes, all intended).
 
+- Final polish: progress arc hero, quests as a connected path, custom line icons (no emoji), clearer microcopy. Verified with the full journey on a local chain, axe (0 violations, light and dark), keyboard focus, phone width, and mainnet screenshots.
+
 ### Knowingly accepted
 - The ethers library is about 136 KB over the network versus 33 KB for all project code; removing it needs a build step, which was ruled out.
 - GitHub Pages cannot send a `frame-ancestors` header, so clickjacking cannot be blocked by policy; every transaction still needs an explicit wallet confirmation.
