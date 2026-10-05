@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open Quest: an open quest registry on Arc</title>
+  <meta name="description" content="Complete three quests on Arc and earn a soulbound badge. Anyone can add their own quest.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://rpc.mainnet.arc.io https://rpc.testnet.arc.io; base-uri 'none'; form-action 'none'">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.17.0/ethers.umd.min.js"
+          integrity="sha384-lApM4ELRuFNT7NgNqnXB2zFWgSDdhVvmnOHov2DPJz/2zuNpZImXBeklFr18ilvi"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Open Quest</h1>
+    <p class="lede">An open quest registry on Arc. Finish three quests, earn a badge, or add a quest of your own.</p>
+  </header>
+
+  <main>
+    <section class="note" id="cost-note" aria-label="What this costs">
+      <p><strong>What does it cost?</strong> Less than $0.05 in USDC covers everything. Each step has a network fee of about a quarter of a cent, and the 0.01 USDC you deposit comes back to you.</p>
+    </section>
+
+    <div class="toolbar" id="toolbar">
+      <button class="btn primary" id="connect-btn" type="button">Connect wallet</button>
+      <span class="pill" id="account-pill" hidden><span class="dot ok" aria-hidden="true"></span><span id="account-text" class="mono"></span></span>
+      <span class="pill" id="network-pill"><span class="dot" aria-hidden="true"></span><span id="network-text"></span></span>
+    </div>
+
+    <div class="banner" id="banner" role="alert" hidden>
+      <p id="banner-text"></p>
+      <button class="btn primary" id="banner-btn" type="button" hidden></button>
+    </div>
+
+    <p class="status-line" id="status-line" role="status" aria-live="polite"></p>
+
+    <h2 id="quests-title">Your quests</h2>
+    <ol class="quests" id="quests" aria-labelledby="quests-title"></ol>
+
+    <div id="badge-area"></div>
+  </main>
+
+  <footer>
+    <p>Built on Arc. Open Quest is an independent project and is not affiliated with or endorsed by Circle or Arc.</p>
+  </footer>
+</body>
+</html>

@@ -18,9 +18,9 @@ Calm, clear, trustworthy, a little playful. A newcomer should always know the on
 
 ## Color
 Light (default): [proposed, accepted]
-- Background `#FFFFFF`, surface `#F5F7FA`, text `#0F172A`, muted text `#64748B`
+- Background `#FFFFFF`, surface `#F5F7FA`, text `#0F172A`, muted text `#5A6A80` (darkened from `#64748B` in the build to reach WCAG AA on the grey surface)
 - Primary `#4D8EE9`, accent `#5FBFFF`
-- Success `#16A34A`, warning `#D97706`, error `#DC2626`
+- Success `#15803D` (darkened from `#16A34A` in the build to reach WCAG AA), warning `#B45309` (darkened from `#D97706` for text contrast), error `#DC2626`. Buttons and the active number use a darker blue `#2F6FCF` for contrast; `#4D8EE9` stays the main brand blue for borders and hover.
 
 Dark (follows system setting): background `#0B1020`, surface `#141B2D`, text `#E6EAF2`, muted `#94A3B8`, same primary and accent, status colors lightened if needed for contrast. [proposed, accepted]
 

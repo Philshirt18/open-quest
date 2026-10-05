@@ -50,7 +50,7 @@ status: approved
   - Try it yourself: open your deployed registry on the testnet explorer and see the badge.
   - Commit: `feat: testnet deployment and measured fees`
 
-- [ ] **5. The page: connect, network, progress and look**
+- [x] **5. The page: connect, network, progress and look**
   - Becomes usable: you open the page, connect, switch to Arc, and see your real quest status and the cost note, in the agreed design.
   - Why now: reading chain state is lower risk than sending transactions, and sets up the page for slice 6.
   - PRD ref: `prd.md > Connect wallet and network`, `Cost note`, `Quest sequence`
@@ -96,3 +96,6 @@ status: approved
 - Slice 4: deployed to Arc Testnet (chain 5042002) with the real USDC at 0x3600...0000 and ran the full journey. Fee computed from receipts (gasUsed x effectiveGasPrice / 1e18) matched the real balance change exactly. Whole journey costs about $0.011 in fees (join $0.0014, approve $0.0015, deposit $0.0030, withdraw $0.0019, claim $0.0031), the 0.01 USDC deposit is returned. Cost note on the page can say "less than $0.05".
 - Slice 4: the explorer is Blockscout; `forge verify-contract --verifier blockscout` works but the explorer rate-limits. 4 of 6 testnet contracts are verified (RegisterQuest, DepositQuest, QuestBadge, QuestRegistry); WithdrawQuest and HolderQuest kept failing with "Too many requests". `script/verify.sh` retries; the manual fallback is the explorer's verification page. Not blocking.
 - Slice 4: `docs/config.js` was created here (earlier than planned) so the testnet addresses live in the single config file; slice 5 builds the page around it.
+- Slice 5: ethers pinned to 6.17.0 from cdnjs with a SHA-384 integrity hash computed from the downloaded file. Added a Content-Security-Policy meta tag (scripts only from the page itself and cdnjs; network requests only to Arc's public RPCs). If a later slice needs another host (for example a different RPC), update the policy in `docs/index.html`.
+- Slice 5: design colours darkened for WCAG AA after measuring contrast (muted text #5A6A80, success #15803D); recorded in `plan/design.md`. Buttons use #2F6FCF, the brand blue #4D8EE9 stays for borders and hover.
+- Slice 5: the page attaches wallet listeners the first time it sees a wallet (some wallets inject late). All states were checked with an injected test wallet: no wallet, wrong network then switch, fresh wallet, finished wallet (real testnet data), mainnet not configured, unreachable network with retry.
