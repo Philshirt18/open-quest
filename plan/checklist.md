@@ -130,6 +130,12 @@ Pre-ship review (security, accessibility, performance), 2026-10-05. Checked with
 - Text sizes now in rem so they follow the browser's text-size setting.
 - Stateful invariant tests added (vault holds exactly the live deposits, per-wallet balance is zero or one deposit, withdrawn implies deposited, badges only for finished wallets at most one each). Mutation check: breaking the withdrawal makes them fail.
 
+### Additions after the review (agreed with the owner)
+- Community quests list, register-a-quest form, total-fees line, favicon and social preview image (page only, no contract change).
+- Builder kit: `QuestTemplate`, `RegisterQuest` script, `BUILDERS.md`, tests.
+- New on-chain badge artwork (needs a new badge contract, so one more registry and badge redeploy at the end).
+- `SECURITY.md` and a Slither run (no high or medium findings; 3 notes, all intended).
+
 ### Knowingly accepted
 - The ethers library is about 136 KB over the network versus 33 KB for all project code; removing it needs a build step, which was ruled out.
 - GitHub Pages cannot send a `frame-ancestors` header, so clickjacking cannot be blocked by policy; every transaction still needs an explicit wallet confirmation.

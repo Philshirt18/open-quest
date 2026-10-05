@@ -73,6 +73,17 @@ A section below the quests. It shows a short code example (about 10 lines) of a 
 Anyone can register a quest contract (an address that answers "has this wallet completed it?", plus a name and a short description). The registry tracks which quests each wallet has completed and exposes a wallet's progress.
 - **Criteria:** a third-party quest registered by a different address appears in the registry and in a wallet's progress, with no change to the other contracts.
 
+### Community quests (added after the first review)
+A section below the three quests lists every quest registered by anyone (newest first, ten at a time), with the connected wallet's status on each ("Done" / "Not done"). Quests written by other people never change the badge. Names and descriptions are shown as plain text with control characters removed.
+- **Criteria:** a quest registered by another wallet appears in the list without any change to the page or contracts; a broken quest shows "Not done" and does not break the list.
+
+### Register a quest (added after the first review)
+A form (contract address, name up to 64 bytes, optional description up to 280 bytes) that sends `registerQuest` from the visitor's wallet. It shows a preview of what the quest answers for the connected wallet and refuses obvious mistakes (not an address, no contract there, already registered) before asking the wallet for anything.
+- **Criteria:** a valid registration shows the fee in dollars and an explorer link and the quest appears in the community list.
+
+### Badge artwork (changed after the first review)
+The badge is an on-chain SVG: an arc with one ticked node per quest, the level, "built on Arc" and the owner's short address.
+
 ## Product Decisions
 - **Open registry is the kernel.** It leads the page and the README. The user wants judges to remember it.
 - **Fixed quest order on the page, free order in the contracts.** Guides newcomers without extra contract complexity.

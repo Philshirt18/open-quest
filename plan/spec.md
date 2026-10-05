@@ -89,7 +89,7 @@ Implements `prd.md > Quest 2: Deposit 0.01 USDC`.
 A view-only quest with no funds: `check(user)` returns `DepositQuest.withdrawn(user)`, which is only true after a real deposit followed by a real withdrawal. The page's Withdraw button calls `DepositQuest.withdraw()`. **Decision:** the withdraw action lives next to the money so that it can never be blocked by another contract; `WithdrawQuest` is the checker. Implements `prd.md > Quest 3: Withdraw`.
 
 ### QuestBadge
-Soulbound ERC-721 (OpenZeppelin). The token id is the owner's address as a number, so one wallet can only ever hold one badge. Only the registry can mint (the registry address is fixed in the constructor). Transfers revert: `_update` rejects everything except minting, and approvals have no effect. Implements ERC-5192 `locked(id)` returning true and the `Locked` event. Stores the level per token; `tokenURI` returns on-chain JSON (name, level, a small SVG) so the badge shows in wallets without hosting anything. Uses `_mint` (not `_safeMint`) so no receiver callback can re-enter. Implements `prd.md > Claim badge`.
+Soulbound ERC-721 (OpenZeppelin). The token id is the owner's address as a number, so one wallet can only ever hold one badge. Only the registry can mint (the registry address is fixed in the constructor). Transfers revert: `_update` rejects everything except minting, and approvals have no effect. Implements ERC-5192 `locked(id)` returning true and the `Locked` event. Stores the level per token; `svgOf(tokenId)` draws the artwork on-chain (arc with one ticked node per quest, the level, "built on Arc", the owner's short address) and `tokenURI` returns on-chain JSON with that image, so the badge shows in wallets without hosting anything. Uses `_mint` (not `_safeMint`) so no receiver callback can re-enter. Implements `prd.md > Claim badge`.
 
 ### HolderQuest (example third-party quest)
 About 10 lines: `check(user)` returns true if the user's USDC balance is at least 1 USDC. Deployed and registered with the same public `registerQuest` call anyone would use. Appears only in the "Add your own quest" section and the README; it never affects the badge. Implements `prd.md > Add your own quest`.
@@ -102,6 +102,12 @@ Connect button, wallet address, banner for wrong network, friendly state for no 
 
 ### Frontend: quests and feedback (`docs/app.js`)
 Renders the three cards from on-chain state, enforces the page-only quest order, drives the two-step Deposit, shows "Waiting for confirmation", rejected/failed/slow states, and after each transaction shows the fee and explorer link. Fee in dollars = `gasUsed × effectiveGasPrice ÷ 10^18` (native USDC has 18 decimals), shown with up to 4 decimals ("less than $0.0001" if smaller). USDC amounts for deposits use 6 decimals. Reads progress on load so a reopened page shows the true state. Implements `prd.md > Quest sequence`, `Quest 1`, `Quest 2`, `Quest 3`, `Transaction feedback`.
+
+### Frontend: community quests and register form (`docs/index.html`, `docs/app.js`) — added after the first review
+Reads `questCount()` and `getQuest(id)` for ids 3 and up (newest first, ten at a time) and `isComplete(id, wallet)` for the connected wallet. Text from the chain goes into the page only through `textContent` after removing control and text-direction characters. The form validates input, previews `check(wallet)` with a gas limit, re-checks the network and that the address is a contract that is not yet registered, then sends `registerQuest`. Implements the new PRD sections `Community quests` and `Register a quest`.
+
+### Builder kit — added after the first review
+`src/examples/QuestTemplate.sol`, `script/RegisterQuest.s.sol` (dry run without `--broadcast`), `test/QuestTemplate.t.sol`, `BUILDERS.md`.
 
 ### Frontend: cost note, badge, add-your-own (`docs/index.html`, `docs/app.js`)
 The cost note before connecting ("less than $0.05 of USDC covers everything"; the exact number is confirmed from measured fees). Claim button locked with "Complete all 3 quests" until ready, the badge view with its level, and the "Add your own quest" section with the code example and a live Holder quest status. Implements `prd.md > Cost note`, `Claim badge`, `Add your own quest`.
