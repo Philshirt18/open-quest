@@ -152,6 +152,9 @@ Pre-ship review (security, accessibility, performance), 2026-10-05. Checked with
 ### Mainnet redeploy (done by the owner, 2026-10-05, block 24395004)
 - New QuestRegistry `0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97` and QuestBadge `0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102`; cost 0.0579 USDC. Read-only checks: 4 quests registered (the existing three plus the Holder quest), badge and registry point at each other, the owner's wallet shows progress [true, true, true] in the new registry. Addresses are in `deployments/5042.json` (with previousRegistry / previousBadge), `docs/config.js` and the README.
 
+### Mainnet redeploy v3 (done by the owner, 2026-10-05, block 24398713)
+- New QuestRegistry `0x9Ec3c3c0626488B3E3d7F7F8E66642BdE698bC1f` and QuestBadge `0xd50920c9E4eC6539269b22FA95f2ACd80D3C970b` with the new on-chain artwork; cost 0.0742 USDC. Read-only checks passed (4 quests, same existing quests, owner's progress [true, true, true], no badge yet). v1 and v2 are recorded in the README as superseded.
+
 ### Open
-- The owner claims a badge from the new registry with their MetaMask wallet (one click, quests are already done).
+- The owner claims a badge from the v3 registry with their MetaMask wallet (one click, quests are already done).
 - Optional: upload the source verification bundles (`verification/`, regenerated for the new registry and badge) on the explorer.

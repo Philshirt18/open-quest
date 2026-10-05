@@ -82,15 +82,18 @@ A working example is in [`src/examples/HolderQuest.sol`](src/examples/HolderQues
 
 | Contract | Address |
 |---|---|
-| QuestRegistry | [`0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97`](https://explorer.arc.io/address/0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97) |
-| QuestBadge | [`0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102`](https://explorer.arc.io/address/0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102) |
+| QuestRegistry | [`0x9Ec3c3c0626488B3E3d7F7F8E66642BdE698bC1f`](https://explorer.arc.io/address/0x9Ec3c3c0626488B3E3d7F7F8E66642BdE698bC1f) |
+| QuestBadge | [`0xd50920c9E4eC6539269b22FA95f2ACd80D3C970b`](https://explorer.arc.io/address/0xd50920c9E4eC6539269b22FA95f2ACd80D3C970b) |
 | RegisterQuest | [`0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09`](https://explorer.arc.io/address/0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09) |
 | DepositQuest | [`0x72f924Ab07007cC43C618ba3eFA5c9614C89816b`](https://explorer.arc.io/address/0x72f924Ab07007cC43C618ba3eFA5c9614C89816b) |
 | WithdrawQuest | [`0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1`](https://explorer.arc.io/address/0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1) |
 | HolderQuest (example, id 3) | [`0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077`](https://explorer.arc.io/address/0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077) |
 
 
-**Deployment history.** The first mainnet registry (`0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9`, badge `0x784FC1C9B89249e73657097846584487df91fC59`) is superseded and unused. A pre-ship review found that its `isComplete()` read could revert when a third-party quest returned malformed data. The registry was fixed and redeployed on top of the same three quests and the same Holder example, so quest progress carried over; the badge is claimed from the new registry. Nothing else changed.
+**Deployment history.** The registry and badge on mainnet are the third version. The three quests and the Holder example were deployed once and never changed, so quest progress carried over each time.
+- **v1** (registry `0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9`, badge `0x784FC1C9B89249e73657097846584487df91fC59`): superseded. A pre-ship review found its `isComplete()` read could revert when a third-party quest returned malformed data.
+- **v2** (registry `0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97`, badge `0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102`): superseded. It fixed that read; v3 only changes the badge artwork, which lives in the badge contract.
+- **v3** (the table above): current.
 
 ### Arc Testnet (chain id 5042002), deployed 2026-10-05 for rehearsal
 

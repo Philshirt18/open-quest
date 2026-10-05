@@ -17,15 +17,15 @@ export const NETWORKS = {
     nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
     faucetUrl: null,
     // Deployed on 2026-10-05 by the project owner (deployer 0xC2Ab9130E99410e42701936F6d16E012B9a909d5).
-    // The registry and badge are the second version (fixes how third-party quests are read). The quests are unchanged.
-    // First registry (superseded, unused): 0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9; first badge: 0x784FC1C9B89249e73657097846584487df91fC59.
+    // The registry and badge are the third version (v2 fixed how third-party quests are read; v3 has the new badge artwork).
+    // The quests are unchanged. Superseded and unused: v1 registry 0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9 (badge 0x784FC1C9B89249e73657097846584487df91fC59), v2 registry 0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97 (badge 0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102).
     contracts: {
       usdc: "0x3600000000000000000000000000000000000000",
       registerQuest: "0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09",
       depositQuest: "0x72f924Ab07007cC43C618ba3eFA5c9614C89816b",
       withdrawQuest: "0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1",
-      questRegistry: "0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97",
-      questBadge: "0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102",
+      questRegistry: "0x9Ec3c3c0626488B3E3d7F7F8E66642BdE698bC1f",
+      questBadge: "0xd50920c9E4eC6539269b22FA95f2ACd80D3C970b",
       holderQuest: "0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077",
       holderQuestId: 3,
     },
