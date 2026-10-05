@@ -84,9 +84,9 @@ status: approved
 
 - [x] Project started as the spec describes; relevant checks pass
 - [x] Owner deploys to Arc mainnet with the README commands; addresses go into `docs/config.js` (mainnet contracts, default network = mainnet) and the README table; user completes the journey once on mainnet (target: Oct 11-12, deadline Oct 14, 23:59 ET)
-- [ ] User explored the running app and gave feedback
-- [ ] Agreed fixes implemented, verified, committed (list each as its own unchecked item)
-- [ ] User confirmed the first version is ready to ship
+- [x] User explored the running app and gave feedback
+- [x] Agreed fixes implemented, verified, committed (none requested: the user reported that everything worked)
+- [x] User confirmed the first version is ready to ship
 
 ## Revisions
 
@@ -108,3 +108,4 @@ status: approved
 - Slice 7: explorer verification of WithdrawQuest and HolderQuest on testnet is still pending because of the explorer's rate limit; the README states this and gives a manual fallback.
 - Mainnet deployment (2026-10-05): deployed by the owner from 0xC2Ab9130E99410e42701936F6d16E012B9a909d5 (block 24390112). Total cost 0.0739 USDC. Read-only checks passed: all six contracts have code, the registry lists 4 quests (3 built-in plus the Holder quest as id 3), badge and registry point at each other, DepositQuest uses the official USDC, WithdrawQuest points at DepositQuest. Addresses are in `deployments/5042.json`, `docs/config.js` (default network is now mainnet) and the README. The owner still needs to complete the journey once on mainnet with their MetaMask wallet.
 - Mainnet deployment: a dry run first caught that `.env` held the old testnet key (a stale shell variable plus a key pasted into `.env.example`); fixed by the owner before broadcasting. The key never entered git.
+- Final review: the owner completed the whole journey on Arc mainnet with their MetaMask wallet (0x28b8...27B9) and reported that everything worked. Confirmed on-chain: all three quests done, the deposit returned (nothing held for that wallet), one Level 3 badge minted to that wallet.
