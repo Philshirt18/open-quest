@@ -40,7 +40,7 @@ status: approved
   - Try it yourself: run the same anvil and deploy commands in your terminal and see the addresses printed.
   - Commit: `feat: deploy script and local deployment`
 
-- [ ] **4. Testnet rehearsal with real USDC**
+- [x] **4. Testnet rehearsal with real USDC**
   - Becomes usable: the contracts are live on Arc Testnet, and the whole journey works with the real USDC contract.
   - Why now: the biggest unknowns (real USDC behavior, fee numbers, explorer links) come before any frontend depends on them. You prepare a throwaway deployer key and faucet funds; I never see the key.
   - PRD ref: `prd.md > Transaction feedback`, `prd.md > Cost note`
@@ -93,3 +93,6 @@ status: approved
 - Slice 1: `forge install` could not add git submodules because the project folder name ends with a space, so dependencies were installed with `--no-git` and only their Solidity sources are committed (see `.gitignore`).
 - Slice 1: the registry constructor takes the three built-in quests with their names and descriptions and registers them as ids 0-2 (the badge is added in slice 2).
 - Slice 2: the reentrancy test passes even without `nonReentrant` because `withdraw()` zeroes the balance before sending funds (checks-effects-interactions). Both layers stay in; the test proves the attack fails, not the guard alone.
+- Slice 4: deployed to Arc Testnet (chain 5042002) with the real USDC at 0x3600...0000 and ran the full journey. Fee computed from receipts (gasUsed x effectiveGasPrice / 1e18) matched the real balance change exactly. Whole journey costs about $0.011 in fees (join $0.0014, approve $0.0015, deposit $0.0030, withdraw $0.0019, claim $0.0031), the 0.01 USDC deposit is returned. Cost note on the page can say "less than $0.05".
+- Slice 4: the explorer is Blockscout; `forge verify-contract --verifier blockscout` works but the explorer rate-limits. 4 of 6 testnet contracts are verified (RegisterQuest, DepositQuest, QuestBadge, QuestRegistry); WithdrawQuest and HolderQuest kept failing with "Too many requests". `script/verify.sh` retries; the manual fallback is the explorer's verification page. Not blocking.
+- Slice 4: `docs/config.js` was created here (earlier than planned) so the testnet addresses live in the single config file; slice 5 builds the page around it.
