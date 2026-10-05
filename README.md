@@ -18,7 +18,7 @@
 
 ## Seeing a wallet warning?
 
-MetaMask (and other wallets) scan new websites automatically, and a brand-new site on a free `github.io` address can be flagged as "possibly phishing" before it has any history. That is a machine guess, not a finding about this project, and a removal request has been filed. Please don't take our word for it. Everything is open, and the page can only ask your wallet for six things:
+MetaMask (and other wallets) scan new websites automatically, and a brand-new site on a free `github.io` address can be flagged as "possibly phishing" before it has any history. That is a machine guess, not a finding about this project, and a removal request has been filed ([MetaMask/eth-phishing-detect#300075](https://github.com/MetaMask/eth-phishing-detect/issues/300075)). Please don't take our word for it. Everything is open, and the page can only ask your wallet for six things:
 
 | Action | What your wallet is asked to do |
 |---|---|
