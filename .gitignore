@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+out/
+cache/
+node_modules/
+.DS_Store
+
+# Keep only the Solidity sources of dependencies in git
+lib/openzeppelin-contracts/*
+!lib/openzeppelin-contracts/contracts/
+!lib/openzeppelin-contracts/LICENSE
+lib/forge-std/test/
+lib/forge-std/.github/
