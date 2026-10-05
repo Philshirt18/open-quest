@@ -4,7 +4,8 @@
 
 > Built on Arc. Open Quest is an independent project and is not affiliated with or endorsed by Circle or Arc.
 
-**Live demo:** _link goes here once GitHub Pages is on (https://YOUR-USER.github.io/YOUR-REPO/)_
+**Live demo:** https://philshirt18.github.io/open-quest/ (Arc mainnet)
+**Source:** https://github.com/Philshirt18/open-quest
 **Network:** Arc mainnet (chain id 5042). Arc Testnet (chain id 5042002) is used for rehearsal: add `?network=testnet` to the page address.
 
 <p align="center">

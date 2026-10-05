@@ -36,7 +36,10 @@ Two things from the docs that matter here: native gas USDC uses **18 decimals** 
 - **See the page locally:** `python3 -m http.server 8000 --directory docs`, then open `http://localhost:8000`.
 - **Testnet rehearsal (rehearsal 2):** with a fresh throwaway deployer key in `.env` and testnet USDC from the faucet: `forge script script/Deploy.s.sol --rpc-url arc_testnet --broadcast`.
 - **Mainnet deploy (done by the user, never by the agent without asking):** the same script with `--rpc-url arc_mainnet`. The agent gives the exact commands; the user runs them.
-- **Deploy target for the page:** GitHub Pages, branch `main`, folder `/docs`. `kit-7-ship` pushes the public repo and turns Pages on. The live URL (`https://<user>.github.io/<repo>/`) goes into the README and the hackathon submission.
+- **Deploy target for the page:** GitHub Pages, branch `main`, folder `/docs`.
+- **Repository (public):** https://github.com/Philshirt18/open-quest
+- **Live page:** https://philshirt18.github.io/open-quest/ (default network: Arc mainnet; `?network=testnet` for the rehearsal deployment). Shipped 2026-10-05; verified against mainnet.
+- **To update the page:** commit to `main`; Pages rebuilds from `docs/` in about a minute.
 - **Environment variables (names only, placeholders in `.env.example`):**
   - `PRIVATE_KEY` — deployer key. Never committed; `.env` is git-ignored. Never typed in chat.
   - `ARC_MAINNET_RPC_URL`, `ARC_TESTNET_RPC_URL` — filled from the official values above.

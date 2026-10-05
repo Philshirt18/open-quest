@@ -160,3 +160,4 @@ Pre-ship review (security, accessibility, performance), 2026-10-05. Checked with
 ### Open
 - The owner claims a badge from the v3 registry with their MetaMask wallet (one click, quests are already done).
 - Optional: upload the source verification bundles (`verification/`, regenerated for the new registry and badge) on the explorer.
+- Shipped 2026-10-05: public repo https://github.com/Philshirt18/open-quest and live page https://philshirt18.github.io/open-quest/ . Pre-push audit clean (no keys, no personal data, noreply identity). Live page verified against Arc mainnet: visitor view, finished-wallet view, badge image, registry link, no console errors.
