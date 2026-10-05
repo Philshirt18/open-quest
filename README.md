@@ -71,12 +71,15 @@ A working example is in [`src/examples/HolderQuest.sol`](src/examples/HolderQues
 
 | Contract | Address |
 |---|---|
-| QuestRegistry | [`0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9`](https://explorer.arc.io/address/0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9) |
-| QuestBadge | [`0x784FC1C9B89249e73657097846584487df91fC59`](https://explorer.arc.io/address/0x784FC1C9B89249e73657097846584487df91fC59) |
+| QuestRegistry | [`0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97`](https://explorer.arc.io/address/0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97) |
+| QuestBadge | [`0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102`](https://explorer.arc.io/address/0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102) |
 | RegisterQuest | [`0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09`](https://explorer.arc.io/address/0x6ccE5FC58453Cb5587ea6460b40514e6B34D6c09) |
 | DepositQuest | [`0x72f924Ab07007cC43C618ba3eFA5c9614C89816b`](https://explorer.arc.io/address/0x72f924Ab07007cC43C618ba3eFA5c9614C89816b) |
 | WithdrawQuest | [`0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1`](https://explorer.arc.io/address/0xa764DbE7209ad861Dc435f7D5a8bE2994B45AAe1) |
 | HolderQuest (example, id 3) | [`0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077`](https://explorer.arc.io/address/0xD702AF3488d9DA6FA0bb6252c9e88deac7De0077) |
+
+
+**Deployment history.** The first mainnet registry (`0xAb69EE0E82Fac02e54637aB564406c3cCcba77f9`, badge `0x784FC1C9B89249e73657097846584487df91fC59`) is superseded and unused. A pre-ship review found that its `isComplete()` read could revert when a third-party quest returned malformed data. The registry was fixed and redeployed on top of the same three quests and the same Holder example, so quest progress carried over; the badge is claimed from the new registry. Nothing else changed.
 
 ### Arc Testnet (chain id 5042002), deployed 2026-10-05 for rehearsal
 
@@ -90,7 +93,7 @@ A working example is in [`src/examples/HolderQuest.sol`](src/examples/HolderQues
 | HolderQuest (example, id 3) | [`0x90D345aB83020523bae46867d53a5467Db363C72`](https://explorer.testnet.arc.io/address/0x90D345aB83020523bae46867d53a5467Db363C72) |
 | USDC (official) | `0x3600000000000000000000000000000000000000` |
 
-Source verification on the testnet explorer: QuestRegistry, QuestBadge, RegisterQuest and DepositQuest are verified. WithdrawQuest and HolderQuest were not yet, because the explorer's API rate limit kept rejecting the requests (the contracts themselves work). See "Verifying source" below.
+The testnet deployment is the first version, for rehearsal only: its registry is the one from before the fix described above. Source verification on the testnet explorer: QuestRegistry, QuestBadge, RegisterQuest and DepositQuest are verified. WithdrawQuest and HolderQuest were not yet, because the explorer's API rate limit kept rejecting the requests (the contracts themselves work). See "Verifying source" below.
 
 ## Safety design
 

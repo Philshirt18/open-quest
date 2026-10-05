@@ -143,6 +143,9 @@ Pre-ship review (security, accessibility, performance), 2026-10-05. Checked with
 - axe: 0 violations in light and dark mode across all page states.
 - Mainnet-fork rehearsal: the redeployed registry reads the existing quests, the existing wallet's progress is `[true, true, true]`, claiming works once and is then rejected, four kinds of hostile quest all return `false`.
 
-### Open until the owner acts
-- Owner runs the registry redeploy on mainnet (dry run first), then the new addresses go into `deployments/5042.json`, `docs/config.js` and the README, and the mainnet badge is claimed again from the new registry.
-- Source verification bundles for the new registry and badge are regenerated for the manual explorer upload.
+### Mainnet redeploy (done by the owner, 2026-10-05, block 24395004)
+- New QuestRegistry `0x96A0Db0B0D9E5CEA1927b0c782b265e084bBde97` and QuestBadge `0x0d79B8DB6bC88f78A503E1f58432a0b37Efd7102`; cost 0.0579 USDC. Read-only checks: 4 quests registered (the existing three plus the Holder quest), badge and registry point at each other, the owner's wallet shows progress [true, true, true] in the new registry. Addresses are in `deployments/5042.json` (with previousRegistry / previousBadge), `docs/config.js` and the README.
+
+### Open
+- The owner claims a badge from the new registry with their MetaMask wallet (one click, quests are already done).
+- Optional: upload the source verification bundles (`verification/`, regenerated for the new registry and badge) on the explorer.
