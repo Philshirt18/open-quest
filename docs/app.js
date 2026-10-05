@@ -52,7 +52,11 @@ function loadTxs() {
   S.txs = { 0: [], 1: [], 2: [], 3: [] };
   try {
     const saved = JSON.parse(localStorage.getItem(storeKey()) ?? "null");
-    if (saved) for (const k of [0, 1, 2, 3]) S.txs[k] = Array.isArray(saved[k]) ? saved[k] : [];
+    // Only keep entries with exactly the expected shape; anything else in storage is ignored.
+    const valid = (t) =>
+      t && typeof t.label === "string" && t.label.length <= 40 &&
+      /^0x[0-9a-fA-F]{64}$/.test(t.hash) && /^[0-9]{1,30}$/.test(String(t.fee));
+    if (saved) for (const k of [0, 1, 2, 3]) S.txs[k] = Array.isArray(saved[k]) ? saved[k].filter(valid) : [];
   } catch { /* storage can be blocked; the page works without it */ }
 }
 function saveTxs() {
@@ -184,12 +188,23 @@ function friendlyError(e) {
   return { text: `That did not go through${why ? ` (${why})` : ""}. You can try again.`, err: true };
 }
 
+// The wallet could have been switched to another network after the page loaded. Check again right
+// before sending anything; if it moved, show the "switch network" banner instead of sending.
+async function onRightNetwork() {
+  const chainId = Number(await window.ethereum.request({ method: "eth_chainId" }));
+  if (chainId === net.chainId) return true;
+  await refresh();
+  return false;
+}
+
 // Runs one card's action: shows waiting states, handles cancel and failure, then reloads real progress.
 async function act(i, work) {
   const ui = S.ui[i];
+  if (ui.busy) return; // buttons stay focusable while working, so ignore a second press
   ui.busy = true; ui.msg = ""; ui.err = false; ui.faucet = false; ui.step = 0;
   render();
   try {
+    if (!(await onRightNetwork())) return;
     if (await work(ui)) {
       ui.msg = "";
       await loadProgress();
@@ -393,7 +408,7 @@ function renderQuests() {
             : el("p", { class: "state" }, el("span", { "aria-hidden": "true" }, "🔒"), lockedReason(i));
       const actions = el("div", { class: "actions", id: `actions-${i}` });
       if (st === "active") {
-        actions.append(el("button", { class: "btn primary", type: "button", onclick: ACTIONS[i].run, ...(ui.busy ? { disabled: "" } : {}) },
+        actions.append(el("button", { class: "btn primary", type: "button", "data-focus-key": `action-${i}`, onclick: ACTIONS[i].run, ...(ui.busy ? { "aria-disabled": "true" } : {}) },
           ui.busy ? "Working…" : ACTIONS[i].label));
       }
       const body = el("div", {}, el("h3", {}, q.title), el("p", { class: "muted" }, q.text), stateLine, actions);
@@ -411,7 +426,7 @@ function renderBadge() {
   const allDone = S.state === "ready" && S.progress.every(Boolean);
   if (S.state === "ready" && S.hasBadge) {
     const level = S.badge?.level ?? 3;
-    const card = el("section", { class: "badge-card", "aria-label": "Your badge" },
+    const card = el("section", { class: "badge-card", "aria-label": "Your badge", tabindex: "-1", "data-focus-key": "badge" },
       S.badge?.image ? el("img", { src: S.badge.image, alt: `Open Quest badge, level ${level}` }) : "",
       el("h3", {}, `Level ${level} badge`),
       el("p", { class: "muted" }, "It's yours for good. This badge can't be sent to anyone else."),
@@ -420,7 +435,8 @@ function renderBadge() {
     return;
   }
   const actions = el("div", { class: "actions" });
-  actions.append(el("button", { class: "btn primary", type: "button", onclick: doClaim, ...(allDone && !ui.busy ? {} : { disabled: "" }) },
+  actions.append(el("button", { class: "btn primary", type: "button", "data-focus-key": "claim", onclick: doClaim,
+    ...(!allDone ? { disabled: "" } : ui.busy ? { "aria-disabled": "true" } : {}) },
     ui.busy ? "Working…" : "Claim badge"));
   const reason = allDone ? "All three quests are done." : S.state === "ready" ? "Complete all 3 quests" : "Connect your wallet first";
   area.replaceChildren(
@@ -448,12 +464,19 @@ function renderHolder() {
         : "Example quest status for your wallet: not done yet. Hold at least 1 USDC to complete it.";
 }
 
+// The page redraws whole sections after every change. Without this, keyboard focus would fall back
+// to the top of the page each time. Put it back on the same button, or on the next logical place.
 function render() {
+  const key = document.activeElement?.dataset?.focusKey ?? null;
   renderToolbar();
   renderBanner();
   renderQuests();
   renderBadge();
   renderHolder();
+  if (!key) return;
+  const same = document.querySelector(`[data-focus-key="${key}"]`);
+  const next = document.querySelector('.quest.active [data-focus-key], [data-focus-key="badge"]');
+  (same ?? next)?.focus({ preventScroll: true });
 }
 
 // ---- start ----------------------------------------------------------------------------------

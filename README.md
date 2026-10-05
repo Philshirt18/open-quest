@@ -55,7 +55,7 @@ cast send <QuestRegistry> "registerQuest(address,string,string)" <yourQuest> "My
 
 A working example is in [`src/examples/HolderQuest.sol`](src/examples/HolderQuest.sol), and the registry in the deployment below has it registered through exactly this call.
 
-**Third-party quests never change the badge.** The registry only reads them (with a gas limit, inside `try/catch`), and the badge depends only on the three built-in quests. So a quest you don't trust, even one that reverts or burns gas, cannot block or fake a badge claim.
+**Third-party quests never change the badge.** The registry only reads them, with a gas limit and a low-level call that copies at most 32 bytes of the answer, and only an answer of exactly `true` counts. The badge depends only on the three built-in quests. So a quest you don't trust cannot block or fake a badge claim, and it cannot make a read revert: tests cover quests that revert, burn all their gas, return nothing, return a value that is not a bool, return too little, or return a huge blob.
 
 ## How it uses Arc
 
@@ -108,7 +108,7 @@ Source verification on the testnet explorer: QuestRegistry, QuestBadge, Register
 
 ```bash
 # install Foundry once: https://book.getfoundry.sh/getting-started/installation
-forge test -vv                                  # 31 tests: every quest, claiming, soulbound transfers, hostile quests, reentrancy
+forge test -vv                                  # 36 tests (about 40 seconds): every quest, claiming, soulbound transfers, hostile quests, reentrancy, and stateful fuzzing over 128,000 random actions
 anvil                                           # a local chain, in a second terminal
 PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
   forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast   # anvil's public test key, no real funds
@@ -116,7 +116,7 @@ PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
 python3 -m http.server 8000 --directory docs    # the page, at http://localhost:8000
 ```
 
-The tests cover each quest's happy path, joining twice, withdrawing before depositing, depositing twice, claiming too early, claiming twice, transferring the soulbound badge (reverts), registering a custom third-party quest, a reverting quest, a gas-burning quest, and a reentrancy attack on the deposit contract.
+The tests cover each quest's happy path, joining twice, withdrawing before depositing, depositing twice, claiming too early, claiming twice, transferring the soulbound badge (reverts), registering a custom third-party quest, hostile quests (reverting, gas-burning, empty, malformed and oversized answers), a reentrancy attack on the deposit contract, and four invariants checked over random sequences of actions: the vault always holds exactly the live deposits, each wallet's balance is zero or one deposit, withdrawing implies depositing, and badges exist only for wallets that finished all three quests, at most one each.
 
 ## Deploy to Arc mainnet (owner only)
 

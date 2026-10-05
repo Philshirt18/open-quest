@@ -47,7 +47,7 @@
     <section aria-labelledby="own-title">
       <h2 id="own-title">Add your own quest</h2>
       <p>Open Quest is open. A quest is any contract that can answer one question: "has this wallet done it?" Write one, register it, and every app that reads the registry can show it. No permission needed.</p>
-<pre><code>// 1. Write a quest: one function that says "has this wallet done it?"
+<pre tabindex="0" role="region" aria-label="Example quest code, scrollable"><code>// 1. Write a quest: one function that says "has this wallet done it?"
 contract HolderQuest is IQuest {
     IERC20Balance public immutable token;
     uint256 public immutable minBalance;

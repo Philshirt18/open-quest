@@ -109,3 +109,40 @@ status: approved
 - Mainnet deployment (2026-10-05): deployed by the owner from 0xC2Ab9130E99410e42701936F6d16E012B9a909d5 (block 24390112). Total cost 0.0739 USDC. Read-only checks passed: all six contracts have code, the registry lists 4 quests (3 built-in plus the Holder quest as id 3), badge and registry point at each other, DepositQuest uses the official USDC, WithdrawQuest points at DepositQuest. Addresses are in `deployments/5042.json`, `docs/config.js` (default network is now mainnet) and the README. The owner still needs to complete the journey once on mainnet with their MetaMask wallet.
 - Mainnet deployment: a dry run first caught that `.env` held the old testnet key (a stale shell variable plus a key pasted into `.env.example`); fixed by the owner before broadcasting. The key never entered git.
 - Final review: the owner completed the whole journey on Arc mainnet with their MetaMask wallet (0x28b8...27B9) and reported that everything worked. Confirmed on-chain: all three quests done, the deposit returned (nothing held for that wallet), one Level 3 badge minted to that wallet.
+
+## Review
+
+Pre-ship review (security, accessibility, performance), 2026-10-05. Checked with tools: git history scans, Foundry tests including new hostile-quest and stateful invariant tests, a mainnet-fork rehearsal, the axe accessibility checker in light and dark mode, browser timing, and manual keyboard tests.
+
+### Findings and what was done
+
+**Must fix**
+- Registry: `isComplete()` reverted when a third-party quest returned empty, short or invalid data, although the code comment and README promised it would return false. Only reads were affected (never funds or badge claims). **Fixed** with a low-level `staticcall` that copies at most 32 bytes and accepts only exactly `true`; four new hostile-quest tests (they failed before the fix). The registry was **redeployed** (the three quests are reused, so progress carries over); see the mainnet entries below.
+
+**Should fix (all fixed)**
+- Personal email in git commit metadata: history to be rewritten to the GitHub noreply address before the first push.
+- Untracked tool folders and `broadcast/` could be swept in by `git add .`: now in `.gitignore`.
+- Code example not keyboard-reachable (axe: serious): now focusable, labelled region.
+- Keyboard focus lost after every re-render: focus is now restored (next logical button, badge card at the end); buttons stay focusable while working (aria-disabled).
+- Page trusted saved fee data and did not re-check the network before sending: saved data is validated, and the network is re-checked right before any transaction (a wallet that moved networks gets the switch banner and nothing is sent).
+
+**Nice to have (done)**
+- Text sizes now in rem so they follow the browser's text-size setting.
+- Stateful invariant tests added (vault holds exactly the live deposits, per-wallet balance is zero or one deposit, withdrawn implies deposited, badges only for finished wallets at most one each). Mutation check: breaking the withdrawal makes them fail.
+
+### Knowingly accepted
+- The ethers library is about 136 KB over the network versus 33 KB for all project code; removing it needs a build step, which was ruled out.
+- GitHub Pages cannot send a `frame-ancestors` header, so clickjacking cannot be blocked by policy; every transaction still needs an explicit wallet confirmation.
+- The testnet deployment still uses the first (pre-fix) registry; it is for rehearsal only.
+
+### Not performed
+- No static analyzer (Slither), no Lighthouse, no screen-reader test, no real-phone test, no independent audit. OpenZeppelin's advisory page lists no advisory for the parts used, but it does not state affected version ranges, so 5.4.0 could not be proven clean.
+
+### Results
+- Tests: 36 passing (9 suites), including 128,000 random actions per invariant run.
+- axe: 0 violations in light and dark mode across all page states.
+- Mainnet-fork rehearsal: the redeployed registry reads the existing quests, the existing wallet's progress is `[true, true, true]`, claiming works once and is then rejected, four kinds of hostile quest all return `false`.
+
+### Open until the owner acts
+- Owner runs the registry redeploy on mainnet (dry run first), then the new addresses go into `deployments/5042.json`, `docs/config.js` and the README, and the mainnet badge is claimed again from the new registry.
+- Source verification bundles for the new registry and badge are regenerated for the manual explorer upload.

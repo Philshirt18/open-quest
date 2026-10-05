@@ -68,7 +68,7 @@ The one-function interface every quest implements: `check(address user) external
 Holds the list of registered quests (`id`, quest address, registrant, name, description). The three built-in quests are registered as ids 0, 1 and 2 in the constructor and can never be changed or removed. The constructor also deploys the `QuestBadge` and remembers it, so no later "set badge" step exists and there is no owner or admin.
 - `registerQuest(address quest, string name, string description) returns (uint256 id)` — callable by anyone. Rejects: zero address, an address with no contract code, an already registered address, a name over 64 bytes, a description over 280 bytes. Emits `QuestRegistered`. It does not call the quest.
 - `questCount()`, `getQuest(id)` — read the list.
-- `isComplete(id, user)` — read-only; calls the quest's `check` inside `try/catch` with a gas limit, so a hostile or broken quest returns false instead of breaking anything.
+- `isComplete(id, user)` — read-only; reads the quest's `check` with a gas-limited low-level `staticcall` that copies at most 32 bytes and accepts only exactly `true`, so a hostile or broken quest (reverts, burns gas, returns nothing, junk or too much data) returns false and never makes the call revert.
 - `builtInProgress(user) returns (bool[3])` — the three built-in checks (trusted code).
 - `claimBadge()` — `nonReentrant`; requires all three built-in checks true (reverts `QuestNotComplete(id)` naming the first missing one); requires no badge yet (reverts `AlreadyClaimed`); mints with level 3. Third-party quests are never called in a transaction.
 
@@ -165,7 +165,7 @@ Short project rules the build writes to `AGENTS.md`:
 ## Failure Modes
 - **No wallet / wrong network / not enough USDC / rejected / failed / slow transaction:** handled as in `prd.md > Connect wallet and network`, `Quest 2`, `Transaction feedback`.
 - **RPC down or slow:** the page shows "Can't reach Arc right now. Try again." with a retry button; it never shows false "done" states.
-- **Hostile or broken third-party quest:** `isComplete` returns false (gas-limited `try/catch`); the badge never depends on it.
+- **Hostile or broken third-party quest:** `isComplete` returns false (gas-limited low-level call, only an exact `true` counts); the badge never depends on it.
 - **USDC issuer restrictions:** USDC is issued by Circle, which can block an address at the token level. If a wallet were blocked, its withdrawal could revert. This is outside our contracts' control and is stated in the README.
 - **Config missing addresses for the connected network:** the page shows a clear message instead of failing silently.
 

@@ -15,4 +15,11 @@ lib/forge-std/.github/
 
 # Local-chain deployments are throwaway; testnet and mainnet files are committed
 deployments/31337.json
-broadcast/*/31337/
+verification/
+
+# Never commit: the assistant's own tooling, build broadcasts, generated verification bundles
+.claude/
+.agents/
+agent/
+skills-lock.json
+broadcast/
